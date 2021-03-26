@@ -1,17 +1,21 @@
-var createError = require("http-errors");
 var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
-
-var app = express();
 const { graphqlHTTP } = require("express-graphql");
 const mongoose = require("mongoose");
 
+var app = express();
+
+const graphqlSchema = require("./graphql/schema/index");
+const graphqlResolvers = require("./graphql/resolvers/index");
+
 // catch 404 and forward to error handler
-app.use(function (req, res, next) {
-  next(createError(404));
-});
+app.use(
+  "/graphql",
+  graphqlHTTP({
+    schema: graphqlSchema,
+    rootValue: graphqlResolvers,
+    graphiql: true,
+  })
+);
 
 // error handler
 app.use(function (err, req, res, next) {
@@ -24,4 +28,11 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-module.exports = app;
+mongoose
+  .connect(`${process.env.MONGO}`)
+  .then(() => {
+    app.listen(5000);
+  })
+  .catch((err) => {
+    console.log(err);
+  });

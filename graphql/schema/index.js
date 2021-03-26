@@ -1,42 +1,66 @@
 const { buildSchema } = require("graphql");
 
 module.exports = buildSchema(`
-type ScreenType {
-    BUTTON,
-    ICON
-}
 
 type Category {
     _id: ID!
     type: String!
-    screenType: ScreenType = ScreenType.ICON
-    hasTime: Boolean = false
+    screenType: String!
+    hasDuration: Boolean!
     title: String!
     backgroundImage: String!
-    options: [Option!]!,
 }
 
 type Option {
     _id: ID!
-    src: String!
+    categoryId: ID!
+    src: String
     text: String!
 }
 
-type RootQuery {
-    categories: [Category!]!
-}
+
 
 type Record {
     _id: ID!
     categoryId: ID!
-    time: Int
+    duration: Int
     optionId: ID!
     date: String!
+    user: ID!
+}
 
+input RecordsInput {
+    records: [RecordInput!]!
+}
+
+input RecordInput {
+    categoryId: ID!
+    duration: Int
+    optionId: ID!
+    user: ID!
+}
+
+input CategoriesInput {
+    categories: [CategoryInput!]!
+}
+
+input CategoryInput {
+    categoryId: ID!
+    options: [ID!]!
+}
+
+type LastUsedOutput {
+    categories: [Category!]!
+    options: [Option!]!
+}
+
+type RootQuery {
+    option(id: ID!): Option
+    lastUsed(uid: ID!): LastUsedOutput!
 }
 
 type RootMutation {
-    
+    createRecords(records: RecordsInput!): [Record!]!
 }
 
 schema {

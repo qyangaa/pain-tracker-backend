@@ -1,0 +1,13 @@
+lastUsed: {
+    _id: userId,
+    items: [optionId]
+}
+
+Record {
+    _id: ID!
+    categoryId: ID!
+    time: Int
+    optionId: ID!
+    date: String!
+    user: ID!
+}
