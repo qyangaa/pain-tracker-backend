@@ -1,0 +1,9 @@
+category_id, title, src, src_active, duration, amount
+2,"peaceful",1,1,0,0
+2,"sad",2,2,0,0
+2,"happy",3,3,0,0
+2,"anxious",4,4,0,0
+3,"hiking",5,5,30,0
+3,"weight",6,6,30,0
+3,"yoga",7,7,30,0
+3,"swimming",8,8,30,0

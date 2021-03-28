@@ -1,4 +1,4 @@
-const { suggested } = require("./temp_data");
+const { suggested } = require("../../tempData/temp_data");
 const Option = require("../../mongodbModels/option");
 const Category = require("../../mongodbModels/category");
 const LastUsed = require("../../mongodbModels/lastUsed");

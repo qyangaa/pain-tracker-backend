@@ -1,0 +1,4 @@
+short_name, title, screen_type, has_duration, background_image
+"pain", "Today I am", "button", false, "https://cdn.pixabay.com/photo/2018/08/21/23/29/fog-3622519_1280.jpg"
+"mood", "Today I feel", "icon", false, "https://cdn.pixabay.com/photo/2014/11/27/10/29/mountain-547363_1280.jpg"
+"exercise", "Today I did", "icon", false, "https://cdn.pixabay.com/photo/2014/08/01/00/08/pier-407252_1280.jpg"
