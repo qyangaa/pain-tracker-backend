@@ -43,7 +43,7 @@ exports.createRecords = async (args, req) => {
     let records = args.records.filter((record) => record.selected);
     const lastUsed = { options: [], _id: uid };
     records = records.map((record) => {
-      lastUsed.options.push(ObjectId(record._id));
+      lastUsed.options.push({ _id: ObjectId(record._id), selected: true });
       return {
         date,
         uid,
@@ -57,7 +57,10 @@ exports.createRecords = async (args, req) => {
       lastUsed.options = lastUsed.options.concat(
         args.records
           .filter((record) => !record.selected)
-          .map((record) => ObjectId(record._id))
+          .map((record) => ({
+            _id: ObjectId(record._id),
+            selected: false,
+          }))
       );
       lastUsed.options = lastUsed.options.slice(0, 4);
     }

@@ -5,8 +5,14 @@ const Schema = mongoose.Schema;
 const lastUsedSchema = new Schema({
   options: [
     {
-      type: Schema.Types.ObjectId,
-      ref: "Option",
+      _id: {
+        type: Schema.Types.ObjectId,
+        ref: "Option",
+      },
+      selected: {
+        type: Boolean,
+        required: true,
+      },
     },
   ],
 });

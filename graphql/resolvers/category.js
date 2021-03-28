@@ -33,20 +33,30 @@ exports.option = (args, req) => {
 
 exports.lastUsed = async (args, req) => {
   try {
-    console.log(args.uid);
-    let optionIds = await getLastUsedByUidHelper(args.uid);
+    // get last used options: lastUsed: [{option: selected}]
+    const lastUsed = await getLastUsedByUidHelper(args.uid);
+
     // if (!optionIds) optionIds = suggested;
-    console.log({ optionIds });
-    const options = await optionsLoader.loadMany(optionIds);
+    const selectedMap = lastUsed.reduce((map, obj) => {
+      map[obj._id] = obj.selected;
+      return map;
+    }, {});
+    const options = await optionsLoader.loadMany(
+      lastUsed.map((item) => item._id)
+    );
+
+    // Find categories appeared
     const categoryIds = new Set();
     const category2options = {};
     options.map(async (option) => {
       const categoryId = option.categoryId.toString();
       categoryIds.add(categoryId);
       if (!category2options[categoryId]) category2options[categoryId] = [];
-      option.selected = false;
+      option.selected = selectedMap[option._id];
       category2options[categoryId].push(option);
     });
+
+    // Organize optios by categories
     const categories = await categoriesLoader.loadMany(Array.from(categoryIds));
     categories.forEach((category) => {
       category.options = category2options[category._id.toString()];

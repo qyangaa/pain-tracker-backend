@@ -1,6 +1,5 @@
-- upload record to mongodb with dummy uid
 - authentication with firebase
-- Add local weather to record
+- add pain location data
 
 To discuss:
 
