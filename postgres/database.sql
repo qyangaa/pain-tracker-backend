@@ -94,7 +94,7 @@ CREATE TABLE weathers(
     wind_speed INTEGER NOT NULL
 );
 
-INSERT INTO weathers(d
+INSERT INTO weathers(
     user_id,
     date_,
     lon ,
@@ -108,8 +108,29 @@ INSERT INTO weathers(d
     visibility,
     wind_speed) VALUES (
         1,
-        
-    )
+        '2021-03-28',
+        -121.9808,
+        37.5502,
+        'Clear',
+        'clear sky',
+        289,
+        45,
+        1024,
+        1,
+        10000,
+        4
+    );
+
+-- create records table
+CREATE TABLE records(
+    record_id SERIAL PRIMARY KEY,
+    user_id INTEGER REFERENCES users(user_id),
+    option_id INTEGER REFERENCES options(option_id) NOT NULL,
+    category_id INTEGER REFERENCES categories(category_id) NOT NULL,
+    duration INTEGER,
+    amount REAL
+);
+
 
 -- Commonly used
 -- Batch select: 
