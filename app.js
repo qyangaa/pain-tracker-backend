@@ -1,6 +1,6 @@
 var express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const mongoose = require("mongoose");
+const mongoose = require("mongoose").set("debug", true);
 
 var app = express();
 
@@ -29,7 +29,10 @@ app.use(function (err, req, res, next) {
 });
 
 mongoose
-  .connect(`${process.env.MONGO}`)
+  .connect(`${process.env.MONGO}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => {
     app.listen(5000);
   })

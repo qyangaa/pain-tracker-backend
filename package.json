@@ -4,10 +4,12 @@
   "private": true,
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "clear": "sudo kill -9 $(sudo lsof -t -i:5000)",
     "start": "nodemon app.js"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
+    "dataloader": "^2.0.0",
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "express-graphql": "^0.12.0",
@@ -15,6 +17,7 @@
     "http-errors": "~1.6.3",
     "jade": "~1.11.0",
     "mongoose": "^5.12.2",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "node-fetch": "^2.6.1"
   }
 }

@@ -4,11 +4,12 @@ module.exports = buildSchema(`
 
 type Category {
     _id: ID!
-    type: String!
+    name: String!
     screenType: String!
     hasDuration: Boolean!
     title: String!
     backgroundImage: String!
+    options: [Option!]!
 }
 
 type Option {
@@ -16,51 +17,31 @@ type Option {
     categoryId: ID!
     src: String
     text: String!
+    selected: Boolean!
+    duration: Int
+    amount: Int
 }
 
-
-
-type Record {
+input recordInput {
     _id: ID!
     categoryId: ID!
+    selected: Boolean!
     duration: Int
-    optionId: ID!
-    date: String!
-    user: ID!
+    amount: Int
 }
 
-input RecordsInput {
-    records: [RecordInput!]!
-}
-
-input RecordInput {
-    categoryId: ID!
-    duration: Int
-    optionId: ID!
-    user: ID!
-}
-
-input CategoriesInput {
-    categories: [CategoryInput!]!
-}
-
-input CategoryInput {
-    categoryId: ID!
-    options: [ID!]!
-}
-
-type LastUsedOutput {
-    categories: [Category!]!
-    options: [Option!]!
+input geoCoordinates {
+    lon: Float,
+    lat: Float
 }
 
 type RootQuery {
     option(id: ID!): Option
-    lastUsed(uid: ID!): LastUsedOutput!
+    lastUsed(uid: ID!): [Category!]!
 }
 
 type RootMutation {
-    createRecords(records: RecordsInput!): [Record!]!
+    createRecords(records: [recordInput!]!, geoCoordinates: geoCoordinates): Boolean
 }
 
 schema {

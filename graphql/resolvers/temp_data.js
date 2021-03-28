@@ -1,7 +1,7 @@
 exports.categories = [
   {
     _id: "pain",
-    type: "pain",
+    name: "pain",
     screenType: "button",
     hasDuration: false,
     title: "Today I am",
@@ -9,7 +9,7 @@ exports.categories = [
   },
   {
     _id: "mood",
-    type: "mood",
+    name: "mood",
     screenType: "icon",
     title: "Today I feel",
     hasDuration: false,
@@ -17,7 +17,7 @@ exports.categories = [
   },
   {
     _id: "exercise",
-    type: "exercise",
+    name: "exercise",
     screenType: "icon",
     title: "Today I did",
     hasDuration: true,
@@ -80,4 +80,11 @@ exports.options = [
 
 exports.lastUsed = { user1: ["better", "worse", "happy", "anxious"] };
 
-exports.suggested = ["better", "worse", "happy", "sad", "yoga", "hiking"];
+exports.suggested = [
+  "605f8ef0534c1c502887b1cc",
+  "605f8f32534c1c502887b1cd",
+  "605f8fd9534c1c502887b1d0",
+  "605f8fc8534c1c502887b1cf",
+  "605f9001534c1c502887b1d4",
+  "605f8fef534c1c502887b1d2",
+];
