@@ -10,7 +10,7 @@ const updateWeather = async (geoCoordinates, date, uid) => {
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER}`;
     const res = await fetch(weatherUrl);
     const raw = await res.json();
-    const weather = {
+    const weather = new Weather({
       date,
       uid,
       lon,
@@ -23,10 +23,11 @@ const updateWeather = async (geoCoordinates, date, uid) => {
       clouds: raw.clouds.all,
       visibility: raw.visibility,
       windSpeed: raw.wind.speed,
-    };
-    Weather.insertOne;
+    });
+    await weather.save();
+    return true;
   } catch (error) {
-    return error;
+    throw error;
   }
 };
 
@@ -34,13 +35,11 @@ exports.createRecords = async (args, req) => {
   try {
     req.uid = "605f90e2534c1c502887b1d6";
     uid = ObjectId(req.uid);
-
-    if (args.geoCoordinates) {
-      const weather = await updateWeather(args.geoCoordinates);
-    }
-    return true;
-
     const date = new Date();
+    if (args.geoCoordinates) {
+      await updateWeather(args.geoCoordinates, date, uid);
+    }
+
     let records = args.records.filter((record) => record.selected);
     const lastUsed = { options: [], _id: uid };
     records = records.map((record) => {

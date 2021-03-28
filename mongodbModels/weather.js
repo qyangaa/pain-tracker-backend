@@ -24,7 +24,7 @@ const weatherSchema = new Schema({
     required: true,
   },
   description: {
-    type: Number,
+    type: String,
     required: true,
   },
   temp: {
