@@ -1,5 +1,6 @@
 var express = require("express");
 const { graphqlHTTP } = require("express-graphql");
+const pool = require("./postgres/db");
 const mongoose = require("mongoose").set("debug", true);
 
 var app = express();

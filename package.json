@@ -5,7 +5,8 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clear": "sudo kill -9 $(sudo lsof -t -i:5000)",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js",
+    "postgres": "sudo -i -u postgres"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
@@ -18,6 +19,7 @@
     "jade": "~1.11.0",
     "mongoose": "^5.12.2",
     "morgan": "~1.9.1",
-    "node-fetch": "^2.6.1"
+    "node-fetch": "^2.6.1",
+    "pg": "^8.5.1"
   }
 }
