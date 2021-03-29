@@ -1,72 +1,47 @@
-const fetch = require("node-fetch");
-const ObjectId = require("mongoose").Types.ObjectId;
-const Record = require("../../mongodbModels/record");
-const LastUsed = require("../../mongodbModels/lastUsed");
-const Weather = require("../../mongodbModels/weather");
-
-const updateWeather = async (geoCoordinates, date, uid) => {
-  try {
-    const { lon, lat } = geoCoordinates;
-    const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER}`;
-    const res = await fetch(weatherUrl);
-    const raw = await res.json();
-    const weather = new Weather({
-      date,
-      uid,
-      lon,
-      lat,
-      main: raw.weather[0].main,
-      description: raw.weather[0].description,
-      temp: raw.main.temp,
-      humidity: raw.main.humidity,
-      pressure: raw.main.pressure,
-      clouds: raw.clouds.all,
-      visibility: raw.visibility,
-      windSpeed: raw.wind.speed,
-    });
-    await weather.save();
-    return true;
-  } catch (error) {
-    throw error;
-  }
-};
+const {
+  updateWeather,
+  uploadRecords,
+  updateLastUsed,
+} = require("../../postgres/queries");
 
 exports.createRecords = async (args, req) => {
   try {
-    req.uid = "605f90e2534c1c502887b1d6";
-    uid = ObjectId(req.uid);
+    req.uid = 1;
     const date = new Date();
     if (args.geoCoordinates) {
-      await updateWeather(args.geoCoordinates, date, uid);
+      await updateWeather(args.geoCoordinates, date, req.uid);
     }
 
     let records = args.records.filter((record) => record.selected);
-    const lastUsed = { options: [], _id: uid };
-    records = records.map((record) => {
-      lastUsed.options.push({ _id: ObjectId(record._id), selected: true });
-      return {
-        date,
-        uid,
-        optionId: ObjectId(record._id),
-        categoryId: ObjectId(record.categoryId),
-        duration: record.duration,
-        amount: record.amount,
-      };
+    const lastUsed = {
+      options: [],
+      selected: [],
+      duration: [],
+      amount: [],
+      _id: req.uid,
+    };
+    records.forEach((record) => {
+      lastUsed.options.push(parseInt(record._id));
+      lastUsed.selected.push(true);
+      lastUsed.duration.push(parseInt(record.duration) ? record.duration : 0);
+      lastUsed.amount.push(parseInt(record.amount) ? record.amount : 0);
     });
     if (lastUsed.options.length < 4) {
-      lastUsed.options = lastUsed.options.concat(
-        args.records
-          .filter((record) => !record.selected)
-          .map((record) => ({
-            _id: ObjectId(record._id),
-            selected: false,
-          }))
-      );
+      args.records
+        .filter((record) => !record.selected)
+        .forEach((record) => {
+          lastUsed.options.push(record._id);
+          lastUsed.selected.push(false);
+          lastUsed.duration.push(record.duration);
+          lastUsed.amount.push(record.amount);
+        });
       lastUsed.options = lastUsed.options.slice(0, 4);
+      lastUsed.selected = lastUsed.selected.slice(0, 4);
+      lastUsed.duration = lastUsed.duration.slice(0, 4);
+      lastUsed.amount = lastUsed.amount.slice(0, 4);
     }
-
-    await Record.insertMany(records);
-    await LastUsed.updateOne({ _id: uid }, lastUsed);
+    await uploadRecords(req.uid, records);
+    await updateLastUsed(req.uid, lastUsed);
   } catch (error) {
     return error;
   }

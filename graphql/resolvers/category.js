@@ -1,6 +1,3 @@
-const { suggested } = require("../../tempData/temp_data");
-const pool = require("../../postgres/db");
-
 const {
   getLastUsed,
   categoriesLoader,

@@ -1,5 +1,10 @@
-const Pool = require("pg").Pool;
+const initOptions = {
+  query(e) {
+    console.log(e.query);
+  },
+};
+const pgp = require("pg-promise")(initOptions);
 const dbConfig = require("../hidden/dbConfig");
-const pool = new Pool(dbConfig);
+const db = pgp(dbConfig);
 
-module.exports = pool;
+module.exports = { db, pgp };

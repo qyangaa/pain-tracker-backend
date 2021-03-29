@@ -84,7 +84,7 @@ CREATE TABLE weathers(
     user_id INTEGER REFERENCES users(user_id) NOT NULL,
     date_ Date NOT NULL,
     lon REAL NOT NULL,
-    lag REAL NOT NULL,
+    lat REAL NOT NULL,
     main VARCHAR(256) NOT NULL,
     description_ TEXT NOT NULL,
     temp INTEGER NOT NULL,
@@ -99,7 +99,7 @@ INSERT INTO weathers(
     user_id,
     date_,
     lon ,
-    lag,
+    lat,
     main,
     description_,
     temp,
@@ -133,10 +133,6 @@ CREATE TABLE records(
 );
 
 
--- Commonly used
--- Batch select: 
-select * from word_weight where word in ('a', 'steeple', 'the');
-
 
 -- Put icons into options
 SELECT p.option_id AS _id, 
@@ -148,23 +144,14 @@ i_src.svg AS src,
 i_src_active as "srcActive"
 FROM options p 
 LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
-LEFT OUTER JOIN icons i_src_active on p.src_active = i_src.icon_id
-WHERE p.option_id = ANY(ARRAY[16,17, 18])
-;
-
-SELECT p.option_id AS _id, 
-p.category_id AS "categoryId"
-FROM options p 
-RIGHT OUTER JOIN icons i_src on p.src = i_src.icon_id
-RIGHT OUTER JOIN icons i_src_active on p.src_active = i_src.icon_id
-WHERE p.option_id = ANY(ARRAY[16,17, 18])
-;
-
-
-SELECT p.option_id AS _id, 
-p.category_id AS "categoryId"
-FROM options p 
-LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
 LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id
-WHERE p.option_id = ANY(ARRAY[16, 18, 19])
+WHERE p.option_id = ANY($1::int[])
 ;
+
+
+-- Commonly used
+-- Batch select: 
+select * from word_weight where word in ('a', 'steeple', 'the');
+-- rename column
+ALTER TABLE weathers 
+RENAME COLUMN lag TO lat;
