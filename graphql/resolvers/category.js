@@ -1,30 +1,15 @@
 const { suggested } = require("../../tempData/temp_data");
-const Option = require("../../mongodbModels/option");
-const Category = require("../../mongodbModels/category");
-const LastUsed = require("../../mongodbModels/lastUsed");
-const DataLoader = require("dataloader");
+const pool = require("../../postgres/db");
 
-const categoriesLoader = new DataLoader((categoryIds) => {
-  return Category.find({ _id: { $in: categoryIds } });
-});
-
-const optionsLoader = new DataLoader((optionIds) => {
-  return Option.find({ _id: { $in: optionIds } });
-});
-
-const getCategoryByIdHelper = async (id) => {
-  const category = await Category.findById(id);
-  return category._doc;
-};
+const {
+  getLastUsed,
+  categoriesLoader,
+  optionsLoader,
+} = require("../../postgres/queries");
 
 const getOptionByIdHelper = async (id) => {
   const option = await Option.findById(id);
   return option._doc;
-};
-
-const getLastUsedByUidHelper = async (uid) => {
-  const options = await LastUsed.findById(uid);
-  return options._doc.options;
 };
 
 exports.option = (args, req) => {
@@ -34,28 +19,43 @@ exports.option = (args, req) => {
 exports.lastUsed = async (args, req) => {
   try {
     // get last used options: lastUsed: [{option: selected}]
-    const lastUsed = await getLastUsedByUidHelper(args.uid);
-
+    const {
+      options: optionIds,
+      selected,
+      duration,
+      amount,
+    } = await getLastUsed(args.uid);
     // if (!optionIds) optionIds = suggested;
-    const selectedMap = lastUsed.reduce((map, obj) => {
-      map[obj._id] = obj.selected;
-      return map;
-    }, {});
-    const options = await optionsLoader.loadMany(
-      lastUsed.map((item) => item._id)
-    );
+    const propertiesMap = {};
+    for (let i = 0; i < optionIds.length; i++) {
+      if (!propertiesMap[optionIds[i]])
+        propertiesMap[optionIds[i]] = { _id: optionIds[i] };
+      propertiesMap[optionIds[i]].selected = selected[i];
+      if (duration) {
+        propertiesMap[optionIds[i]].duration = duration[i];
+      } else {
+        propertiesMap[optionIds[i]].duration = 30;
+      }
 
+      if (amount) {
+        propertiesMap[optionIds[i]].amount = amount[i];
+      } else {
+        propertiesMap[optionIds[i]].amount = 1;
+      }
+    }
+    const options = await optionsLoader.loadMany(optionIds);
     // Find categories appeared
     const categoryIds = new Set();
     const category2options = {};
     options.map(async (option) => {
-      const categoryId = option.categoryId.toString();
+      const categoryId = option.categoryId;
       categoryIds.add(categoryId);
       if (!category2options[categoryId]) category2options[categoryId] = [];
-      option.selected = selectedMap[option._id];
+      option.selected = propertiesMap[option._id].selected;
+      option.amount = propertiesMap[option._id].amount;
+      option.duration = propertiesMap[option._id].duration;
       category2options[categoryId].push(option);
     });
-
     // Organize optios by categories
     const categories = await categoriesLoader.loadMany(Array.from(categoryIds));
     categories.forEach((category) => {

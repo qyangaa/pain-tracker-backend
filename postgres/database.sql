@@ -1,5 +1,6 @@
 CREATE DATABASE pain_tracker;
-
+--start sudo -i -u postgres
+-- psql
 --\c into pain_tracker
 -- \dt show tables
 -- Create categories table
@@ -22,10 +23,10 @@ SELECT * FROM categories;
 
 
 -- Create icons table
-CREATE TABLE icons(options INTEGER[] NOT NULL,
-    selected BOOLEAN[] NOT NULL,
-    duration INTEGER[],
-    amount REAL[]
+CREATE TABLE icons(
+    icon_id SERIAL PRIMARY KEY,
+    svg TEXT NOT NULL
+)
 FROM '/home/arkyyang/files/webdev/pain-tracker/pain-tracker-backend/tempData/icons.csv'
 DELIMITER ','
 CSV HEADER;
@@ -135,3 +136,35 @@ CREATE TABLE records(
 -- Commonly used
 -- Batch select: 
 select * from word_weight where word in ('a', 'steeple', 'the');
+
+
+-- Put icons into options
+SELECT p.option_id AS _id, 
+p.category_id AS "categoryId", 
+p.title, 
+p.duration, 
+p.amount,
+i_src.svg AS src,
+i_src_active as "srcActive"
+FROM options p 
+LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
+LEFT OUTER JOIN icons i_src_active on p.src_active = i_src.icon_id
+WHERE p.option_id = ANY(ARRAY[16,17, 18])
+;
+
+SELECT p.option_id AS _id, 
+p.category_id AS "categoryId"
+FROM options p 
+RIGHT OUTER JOIN icons i_src on p.src = i_src.icon_id
+RIGHT OUTER JOIN icons i_src_active on p.src_active = i_src.icon_id
+WHERE p.option_id = ANY(ARRAY[16,17, 18])
+;
+
+
+SELECT p.option_id AS _id, 
+p.category_id AS "categoryId"
+FROM options p 
+LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
+LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id
+WHERE p.option_id = ANY(ARRAY[16, 18, 19])
+;

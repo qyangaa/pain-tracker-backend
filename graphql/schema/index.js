@@ -16,7 +16,8 @@ type Option {
     _id: ID!
     categoryId: ID!
     src: String
-    text: String!
+    srcActive: String
+    title: String!
     selected: Boolean!
     duration: Int
     amount: Int

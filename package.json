@@ -6,7 +6,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clear": "sudo kill -9 $(sudo lsof -t -i:5000)",
     "start": "nodemon app.js",
-    "postgres": "sudo -i -u postgres"
+    "db": "sudo -i -u postgres"
   },
   "dependencies": {
     "cookie-parser": "~1.4.4",
