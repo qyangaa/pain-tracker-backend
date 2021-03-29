@@ -7,13 +7,9 @@ const {
   optionsLoader,
 } = require("../../postgres/queries");
 
-const getOptionByIdHelper = async (id) => {
-  const option = await Option.findById(id);
-  return option._doc;
-};
-
-exports.option = (args, req) => {
-  return getOptionByIdHelper(args.id);
+exports.option = async (args, req) => {
+  const option = await optionsLoader.load(args.id);
+  return option;
 };
 
 exports.lastUsed = async (args, req) => {
