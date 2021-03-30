@@ -1,6 +1,5 @@
+- dummy authentication to get uid
 - authentication with firebase
-- add pain location data
-
-To discuss:
-
-- Insert many operations or denormalized database for records
+- add pain location data and icons
+- get user record dataloader
+- options search

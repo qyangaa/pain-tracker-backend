@@ -1,13 +1,21 @@
 var express = require("express");
 const { graphqlHTTP } = require("express-graphql");
-const mongoose = require("mongoose");
+const FBAuth = require("./middlewares/FBAuth");
 
 var app = express();
 
 const graphqlSchema = require("./graphql/schema/index");
 const graphqlResolvers = require("./graphql/resolvers/index");
 
-// catch 404 and forward to error handler
+app.use((req, res, next) => {
+  idToken = req.headers.authorization = "Bearer dummyToken";
+  next();
+});
+
+app.use(FBAuth);
+
+// dummy authentication for now
+
 app.use(
   "/graphql",
   graphqlHTTP({
@@ -28,14 +36,4 @@ app.use(function (err, req, res, next) {
   res.render("error");
 });
 
-mongoose
-  .connect(`${process.env.MONGO}`, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-  })
-  .then(() => {
-    app.listen(5000);
-  })
-  .catch((err) => {
-    console.log(err);
-  });
+app.listen(5000);

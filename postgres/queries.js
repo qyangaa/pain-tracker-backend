@@ -3,11 +3,11 @@ const fetch = require("node-fetch");
 const math = require("mathjs");
 const DataLoader = require("dataloader");
 
-const getUid = async (authId) => {
+exports.getUid = async (authId) => {
   try {
     const results = await db.query(
       `SELECT user_id 
-  FROM last_useds WHERE auth_id = $1`,
+  FROM users WHERE auth_id = $1`,
       [authId]
     );
     return results[0];
