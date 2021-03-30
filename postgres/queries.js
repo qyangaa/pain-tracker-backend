@@ -11,7 +11,9 @@ exports.getUid = async (authId) => {
       [authId]
     );
     return results[0];
-  } catch (error) {}
+  } catch (error) {
+    throw error;
+  }
 };
 
 exports.categoriesLoader = new DataLoader(async (categoryIds) => {
@@ -170,6 +172,30 @@ exports.updateLastUsed = async (uid, lastUsed) => {
     const query = pgp.helpers.update(lastUsed, csLastUsed) + condition;
     await db.none(query);
     return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.searchOptionQuery = async (text, categoryId) => {
+  const tsquery = text.split(" ").join("|");
+  try {
+    const results = await db.any(
+      `SELECT p.option_id AS _id, 
+        p.category_id AS "categoryId", 
+        p.title, 
+        p.duration, 
+        p.amount,
+        i_src.svg AS src,
+        i_src_active as "srcActive"
+        FROM options p 
+        LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
+        LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id
+        WHERE p.category_id = $1 AND vector_field @@ to_tsquery($2)
+        ;`,
+      [parseInt(categoryId), tsquery]
+    );
+    return results;
   } catch (error) {
     throw error;
   }

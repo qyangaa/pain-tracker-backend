@@ -1,0 +1,48 @@
+query GetOption {
+  option(id: "18") {
+    title
+    categoryId
+    _id
+    src
+  }
+}
+
+query GetLastUsed {
+  lastUsed(uid: "1") {
+    _id
+    screenType
+    hasDuration
+    title
+    backgroundImage
+    options {
+      _id
+      categoryId
+      src
+      srcActive
+      title
+      selected
+      duration
+      amount
+    }
+  }
+}
+
+mutation createRecords {
+  createRecords(
+    records: [
+      { _id: 16, categoryId: 1, selected: true, duration: null, amount: null }
+      { _id: 20, categoryId: 2, selected: true, duration: null, amount: null }
+      { _id: 23, categoryId: 3, selected: false, duration: null, amount: null }
+    ]
+    geoCoordinates: { lon: -121.9808, lat: 37.5502 }
+  )
+}
+
+query SearchOption {
+  searchOption(text: "swim yoga happy", categoryId: 3) {
+    title
+    categoryId
+    _id
+    src
+  }
+}

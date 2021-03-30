@@ -39,6 +39,7 @@ input geoCoordinates {
 type RootQuery {
     option(id: ID!): Option
     lastUsed(uid: ID!): [Category!]!
+    searchOption(text: String!, categoryId: ID!): [Option!]!
 }
 
 type RootMutation {

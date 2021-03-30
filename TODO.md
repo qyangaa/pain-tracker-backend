@@ -1,5 +1,4 @@
-- dummy authentication to get uid
+- options search
 - authentication with firebase
 - add pain location data and icons
 - get user record dataloader
-- options search

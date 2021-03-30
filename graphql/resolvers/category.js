@@ -2,6 +2,7 @@ const {
   getLastUsed,
   categoriesLoader,
   optionsLoader,
+  searchOptionQuery,
 } = require("../../postgres/queries");
 
 exports.option = async (args, req) => {
@@ -64,4 +65,9 @@ exports.lastUsed = async (args, req) => {
   } catch (error) {
     return error;
   }
+};
+
+exports.searchOption = async (args, req) => {
+  const options = await searchOptionQuery(args.text, args.categoryId);
+  return options;
 };

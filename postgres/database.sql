@@ -155,3 +155,30 @@ select * from word_weight where word in ('a', 'steeple', 'the');
 -- rename column
 ALTER TABLE weathers 
 RENAME COLUMN lag TO lat;
+
+-- Full text search -------------------
+SELECT title FROM options where to_tsvector(title) @@ to_tsquery('swim');
+
+-- triger for indexing when adding new items
+CREATE FUNCTION option_tsvector_trigger() RETURNS trigger AS $$
+BEGIN
+    new.vector_field = to_tsvector('english', coalesce(new.title, ''));
+    return new;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER tsvectorupdate_options BEFORE INSERT OR UPDATE ON options FOR EACH ROW EXECUTE PROCEDURE option_tsvector_trigger();
+
+-- create ts column and index
+ALTER TABLE options
+    ADD COLUMN vector_field tsvector;
+UPDATE options
+set vector_field = to_tsvector(coalesce(title, ''));
+
+CREATE INDEX vector_field_idx
+    ON options
+    USING GIN (vector_field);
+
+-- query
+explain ANALYZE
+SELECT title FROM options where  vector_field @@ to_tsquery('swim');
