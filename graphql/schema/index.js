@@ -24,11 +24,14 @@ type Option {
 }
 
 input recordInput {
-    _id: ID!
-    categoryId: ID!
+    _id: String!
+    categoryId: String!
     selected: Boolean!
     duration: Int
     amount: Int
+    src: String
+    srcActive: String
+    title: String
 }
 
 input geoCoordinates {

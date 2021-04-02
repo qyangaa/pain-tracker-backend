@@ -35,7 +35,7 @@ exports.createRecords = async (args, req) => {
       lastUsed.categories.push(categoryId);
       if (!category2Options[categoryId])
         category2Options[categoryId] = new Set();
-      category2Options[categoryId].add(record._id);
+      category2Options[categoryId].add(parseInt(record._id));
 
       lastUsed.selected.push(true);
       lastUsed.duration.push(parseInt(record.duration) ? record.duration : 0);
@@ -45,8 +45,8 @@ exports.createRecords = async (args, req) => {
     for (const [categoryId, options] of Object.entries(category2Options)) {
       if (options.length >= 4) continue;
       for (let id of popular[categoryId]) {
-        if (options.has(id.toString())) continue;
-        options.add(id.toString());
+        if (options.has(id)) continue;
+        options.add(id);
         lastUsed.options.push(id);
         lastUsed.categories.push(categoryId);
         lastUsed.selected.push(false);
