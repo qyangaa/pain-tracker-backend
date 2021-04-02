@@ -1,11 +1,14 @@
 var express = require("express");
 const { graphqlHTTP } = require("express-graphql");
+var cors = require("cors");
 const FBAuth = require("./middlewares/FBAuth");
 
 var app = express();
 
 const graphqlSchema = require("./graphql/schema/index");
 const graphqlResolvers = require("./graphql/resolvers/index");
+
+app.use(cors());
 
 app.use((req, res, next) => {
   idToken = req.headers.authorization = "Bearer dummyToken";

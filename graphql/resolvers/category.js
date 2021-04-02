@@ -18,7 +18,7 @@ exports.lastUsed = async (args, req) => {
       selected,
       duration,
       amount,
-    } = await getLastUsed(args.uid);
+    } = await getLastUsed(req.uid);
     // if (!optionIds) optionIds = suggested;
     const propertiesMap = {};
     for (let i = 0; i < optionIds.length; i++) {

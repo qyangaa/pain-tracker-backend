@@ -10,7 +10,7 @@ exports.getUid = async (authId) => {
   FROM users WHERE auth_id = $1`,
       [authId]
     );
-    return results[0];
+    return results[0].user_id;
   } catch (error) {
     throw error;
   }
@@ -21,10 +21,10 @@ exports.categoriesLoader = new DataLoader(async (categoryIds) => {
     const results = await db.query(
       `SELECT category_id AS _id,
       short_name AS name,
-      title,
-      screen_type AS "screenType",
+      TRIM (title) AS Title,
+      TRIM (screen_type) AS "screenType",
       has_duration as "hasDuration",
-      background_image as "backgroundImage"
+      TRIM (background_image) as "backgroundImage"
       FROM categories WHERE category_id = ANY($1::int[])`,
       [categoryIds]
     );
@@ -39,11 +39,11 @@ exports.optionsLoader = new DataLoader(async (optionIds) => {
     const results = await db.any(
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
-      p.title, 
+      TRIM (p.title) AS title, 
       p.duration, 
       p.amount,
-      i_src.svg AS src,
-      i_src_active as "srcActive"
+      TRIM (i_src.svg) AS src,
+      TRIM (i_src_active.svg) AS "srcActive"
       FROM options p 
       LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
       LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id

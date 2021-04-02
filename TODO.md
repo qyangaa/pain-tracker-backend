@@ -1,4 +1,3 @@
-- options search
 - authentication with firebase
 - add pain location data and icons
-- get user record dataloader
+- get user record data analysis dataloader

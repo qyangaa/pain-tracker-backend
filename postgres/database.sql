@@ -182,3 +182,21 @@ CREATE INDEX vector_field_idx
 -- query
 explain ANALYZE
 SELECT title FROM options where  vector_field @@ to_tsquery('swim');
+
+-- Remove all trailing spaces
+update categories set background_image = ltrim (background_image) where background_image LIKE ' %';
+update categories set short_name = ltrim (short_name) where short_name LIKE ' %';
+update categories set screen_type = ltrim (screen_type) where screen_type LIKE ' %';
+update categories set title = ltrim (title) where title LIKE ' %';
+
+
+update options set title = ltrim (title) where title LIKE ' %';
+update icons set svg = ltrim (svg) where svg LIKE ' %';
+
+    option_id SERIAL PRIMARY KEY,
+    category_id INTEGER REFERENCES categories(category_id) NOT NULL,
+    title VARCHAR(40) NOT NULL,
+    duration INTEGER,
+    amount REAL,
+    src INTEGER REFERENCES icons(icon_id),
+    src_active INTEGER REFERENCES icons(icon_id)
