@@ -42,11 +42,8 @@ exports.optionsLoader = new DataLoader(async (optionIds) => {
       TRIM (p.title) AS title, 
       p.duration, 
       p.amount,
-      TRIM (i_src.svg) AS src,
-      TRIM (i_src_active.svg) AS "srcActive"
+      p.icon_name
       FROM options p 
-      LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
-      LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id
       WHERE p.option_id = ANY($1::int[])
       ;`,
       [optionIds]
@@ -182,15 +179,12 @@ exports.searchOptionQuery = async (text, categoryId) => {
   try {
     const results = await db.any(
       `SELECT p.option_id AS _id, 
-        p.category_id AS "categoryId", 
-        p.title, 
-        p.duration, 
-        p.amount,
-        i_src.svg AS src,
-        i_src_active as "srcActive"
-        FROM options p 
-        LEFT OUTER JOIN icons i_src on p.src = i_src.icon_id
-        LEFT OUTER JOIN icons i_src_active on p.src_active = i_src_active.icon_id
+      p.category_id AS "categoryId", 
+      TRIM (p.title) AS title, 
+      p.duration, 
+      p.amount,
+      p.icon_name
+      FROM options p 
         WHERE p.category_id = $1 AND vector_field @@ to_tsquery($2)
         ;`,
       [parseInt(categoryId), tsquery]

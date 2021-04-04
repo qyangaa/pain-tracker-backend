@@ -42,7 +42,7 @@ input geoCoordinates {
 type RootQuery {
     option(id: ID!): Option
     lastUsed: [Category!]!
-    searchOption(text: String!, categoryId: ID!): [Option!]!
+    searchOption(text: String!, categoryId: String!): [Option!]!
 }
 
 type RootMutation {

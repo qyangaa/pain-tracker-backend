@@ -1,7 +1,7 @@
 CREATE DATABASE pain_tracker;
 --start sudo -i -u postgres
 -- psql
---\c into pain_tracker
+--\c pain_tracker
 -- \dt show tables
 -- Create categories table
 CREATE TABLE categories(
@@ -38,8 +38,7 @@ CREATE TABLE options(
     title VARCHAR(40) NOT NULL,
     duration INTEGER,
     amount REAL,
-    src INTEGER REFERENCES icons(icon_id),
-    src_active INTEGER REFERENCES icons(icon_id)
+    icon_name VARCHAR(40)
 );
 
 COPY options(category_id, title, src, src_active, duration, amount)
@@ -198,5 +197,30 @@ update icons set svg = ltrim (svg) where svg LIKE ' %';
     title VARCHAR(40) NOT NULL,
     duration INTEGER,
     amount REAL,
-    src INTEGER REFERENCES icons(icon_id),
-    src_active INTEGER REFERENCES icons(icon_id)
+
+update options set icon_name = 'swim' Where title = 'swimming';
+update options set icon_name = 'yoga' Where title = 'yoga';
+update options set icon_name = 'weight' Where title = 'weight';
+update options set icon_name = 'hiking' Where title = 'hiking';
+update options set icon_name = 'anxiety' Where title = 'anxious';
+update options set icon_name = 'happy' Where title = 'happy';
+update options set icon_name = 'sad' Where title = 'sad';
+update options set icon_name = 'peaceful' Where title = 'peaceful';
+
+
+update options set icon_name = 'heart_broken' Where title = 'worse';
+update options set icon_name = 'heart' Where title = 'better';
+'running'
+'pole dancing'
+'hot yoga'
+'boxing'
+'bicycle'
+
+
+INSERT INTO options (category_id, title, icon_name) VALUES (3, 'running', 'running');
+INSERT INTO options (category_id, title, icon_name) VALUES (3, 'pole dancing', 'pole%20dancing');
+INSERT INTO options (category_id, title, icon_name) VALUES (3, 'hot yoga', 'hot%20yoga');
+INSERT INTO options (category_id, title, icon_name) VALUES (3, 'boxing', 'boxing');
+INSERT INTO options (category_id, title, icon_name) VALUES (3, 'biking', 'bicycle');
+
+update categories set has_duration = true  Where category_id = 3;
