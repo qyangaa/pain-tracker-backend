@@ -4,6 +4,7 @@ CREATE DATABASE pain_tracker;
 --\c pain_tracker
 -- \dt show tables
 -- Create categories table
+-- http://127.0.0.1/pgadmin4/browser/#
 CREATE TABLE categories(
     category_id SERIAL PRIMARY KEY,
     short_name VARCHAR(20) NOT NULL,
@@ -224,3 +225,12 @@ INSERT INTO options (category_id, title, icon_name) VALUES (3, 'boxing', 'boxing
 INSERT INTO options (category_id, title, icon_name) VALUES (3, 'biking', 'bicycle');
 
 update categories set has_duration = true  Where category_id = 3;
+
+
+-- Records query
+
+SELECT *
+FROM records
+WHERE user_id = 2
+AND date >=CURRENT_DATE - INTERVAL '1 month'
+ORDER BY date ASC;

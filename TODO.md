@@ -1,3 +1,12 @@
-- authentication with firebase
-- add pain location data and icons
-- get user record data analysis dataloader
+## Data Analysis
+
+- pain-day line plot
+- contribution pie plot: (associate # days of activity ahead with worse/ better)
+- mood aggregation plot (histogram/ pie)
+- mood- pain association
+- activity
+  - aggregation
+    - histogram
+    - tot summary
+  - association
+    - duration activity - pain change
