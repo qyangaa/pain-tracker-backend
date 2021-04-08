@@ -11,7 +11,8 @@ const graphqlResolvers = require("./graphql/resolvers/index");
 app.use(cors());
 
 app.use((req, res, next) => {
-  idToken = req.headers.authorization = "Bearer dummyToken";
+  if (!req.headers.authorization)
+    idToken = req.headers.authorization = "Bearer dummyToken2";
   next();
 });
 

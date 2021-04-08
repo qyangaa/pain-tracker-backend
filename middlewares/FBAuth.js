@@ -15,6 +15,7 @@ module.exports = async (req, res, next) => {
   try {
     let authId = "";
     if (idToken == "dummyToken") authId = "dummyAuthId";
+    else if (idToken == "dummyToken2") authId = "dummyAuthId2";
     // const decodedToken = await admin.auth().verifyIdToken(idToken);
     // req.uid = decodedToken.auth_id;
     if (!authId) return res.status(403).json("Authentication Failed");

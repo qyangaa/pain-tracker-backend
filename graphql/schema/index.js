@@ -23,6 +23,22 @@ type Option {
     amount: Int
 }
 
+type LineChart {
+    title: String!
+    seriesData: [Series]
+}
+
+type Series {
+    xlabel: String!
+    ylabel: String!
+    data: [SeriesItem]
+}
+
+type SeriesItem {
+    x: String
+    y: Float
+}
+
 input recordInput {
     _id: String!
     categoryId: String!
@@ -39,10 +55,14 @@ input geoCoordinates {
     lat: Float
 }
 
+
+
 type RootQuery {
     option(id: ID!): Option
     lastUsed: [Category!]!
     searchOption(text: String!, categoryId: String!): [Option!]!
+    getRecords(numMonths: String): Boolean
+    getPainDayData(numMonths: String): LineChart!
 }
 
 type RootMutation {

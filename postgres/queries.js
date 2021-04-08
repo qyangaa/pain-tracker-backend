@@ -194,3 +194,62 @@ exports.searchOptionQuery = async (text, categoryId) => {
     throw error;
   }
 };
+
+exports.getRecordsByUser = async (uid, from) => {
+  try {
+    if (!from) from = "1 month";
+    const results = await db.any(
+      `
+      SELECT *
+      FROM records
+      WHERE user_id = $1
+      AND date >=CURRENT_DATE - INTERVAL $2
+      ORDER BY date ASC;
+      ;`,
+      [uid, from]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getUserRecordsByOptionId = async (uid, optionId, numMonths) => {
+  try {
+    if (!numMonths) numMonths = "1 month";
+    const results = await db.any(
+      `
+      SELECT *
+      FROM records
+      WHERE user_id = $1
+      AND option_id = $2
+      AND date >=CURRENT_DATE - INTERVAL $3
+      ORDER BY date ASC;
+      ;`,
+      [uid, optionId, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getUserRecordsOptions = async (uid, optionIds, numMonths) => {
+  try {
+    if (!numMonths) numMonths = "1 month";
+    const results = await db.any(
+      `
+      SELECT *
+      FROM records
+      WHERE user_id = $1
+      AND option_id = ANY($2::int[])
+      AND date >=CURRENT_DATE - INTERVAL $3
+      ORDER BY date ASC;
+      ;`,
+      [uid, optionIds, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};

@@ -2,6 +2,8 @@ const {
   updateWeather,
   uploadRecords,
   updateLastUsed,
+  getUserRecordsByOptionId,
+  getUserRecordsOptions,
 } = require("../../postgres/queries");
 
 const popular = {
@@ -12,7 +14,6 @@ const popular = {
 
 exports.createRecords = async (args, req) => {
   try {
-    req.uid = 1;
     const date = new Date();
     if (args.geoCoordinates) {
       await updateWeather(args.geoCoordinates, date, req.uid);
@@ -62,4 +63,55 @@ exports.createRecords = async (args, req) => {
   }
 };
 
-// TODO: upload record to mongodb
+exports.getPainDayData = async (args, req) => {
+  try {
+    const data = await getUserRecordsOptions(
+      req.uid,
+      [16, 17],
+      args.numMonths + " month"
+    );
+    let painLevel = 0;
+    const results = [];
+    data.forEach((item) => {
+      if (item.option_id === 16) painLevel--;
+      else painLevel++;
+      if (
+        results.length &&
+        results[results.length - 1].date &&
+        results[results.length - 1].date.toDateString() ==
+          item.date.toDateString()
+      )
+        results.pop();
+
+      results.push({ x: item.date, y: painLevel });
+    });
+    const series = { xlabel: "date", ylabel: "pain level", data: results };
+    return { title: "Trend of my pain level", seriesData: [series] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getRecords = async (args, req) => {
+  try {
+    const results = await getUserRecordsByOptionId(
+      req.uid,
+      16,
+      args.numMonths + " month"
+    );
+    console.log({ results });
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getRecordsTemplate = async (args, req) => {
+  try {
+    const results = await getRecordsByUser(req.uid, args.numMonths + " month");
+    console.log({ results });
+    return true;
+  } catch (error) {
+    throw error;
+  }
+};
