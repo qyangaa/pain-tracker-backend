@@ -14,8 +14,8 @@ const getIconUrl = (name, platform = "reactNative") => {
   }
   let suffix;
   if (platform === "reactNative") suffix = "hdpi";
-  const src = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}_outline_${suffix}.png?alt=media`;
-  const srcActive = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}_solid_${suffix}.png?alt=media`;
+  const src = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}%2F${name}_outline_${suffix}.png?alt=media`;
+  const srcActive = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}%2F${name}_solid_${suffix}.png?alt=media`;
   return { src, srcActive };
 };
 

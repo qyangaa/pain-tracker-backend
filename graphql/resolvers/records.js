@@ -4,6 +4,8 @@ const {
   updateLastUsed,
   getUserRecordsByOptionId,
   getUserRecordsOptions,
+  getUserRecordsCategory,
+  getUserRecordsCategoryDayTotal,
 } = require("../../postgres/queries");
 
 const popular = {
@@ -86,7 +88,31 @@ exports.getPainDayData = async (args, req) => {
       results.push({ x: item.date, y: painLevel });
     });
     const series = { xlabel: "date", ylabel: "pain level", data: results };
+    console.log(results);
     return { title: "Trend of my pain level", seriesData: [series] };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getDailyTotal = async (args, req) => {
+  try {
+    const data = await getUserRecordsCategoryDayTotal(
+      req.uid,
+      args.categoryId,
+      args.numMonths + " month",
+      args.type
+    );
+    const results = [];
+    data.forEach((item) => {
+      results.push({ x: item.date, y: item[args.type] });
+    });
+    const series = { xlabel: "date", ylabel: args.type, data: results };
+    console.log(results);
+    return {
+      title: `Everyday ${args.categoryName} ${args.type}`,
+      seriesData: [series],
+    };
   } catch (error) {
     throw error;
   }

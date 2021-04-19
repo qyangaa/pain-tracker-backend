@@ -253,3 +253,49 @@ exports.getUserRecordsOptions = async (uid, optionIds, numMonths) => {
     throw error;
   }
 };
+
+exports.getUserRecordsCategory = async (uid, categoryId, numMonths) => {
+  try {
+    if (!numMonths) numMonths = "1 month";
+    const results = await db.any(
+      `
+      SELECT *
+      FROM records
+      WHERE user_id = $1
+      AND category_id = $2
+      AND date >=CURRENT_DATE - INTERVAL $3
+      ORDER BY date ASC;
+      ;`,
+      [uid, categoryId, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getUserRecordsCategoryDayTotal = async (
+  uid,
+  categoryId,
+  numMonths,
+  type
+) => {
+  try {
+    if (!numMonths) numMonths = "1 month";
+    const results = await db.any(
+      `
+      SELECT date, SUM($1:name) AS $1:name
+      FROM records
+      WHERE user_id = $2
+      AND category_id = $3
+      AND date >=CURRENT_DATE - INTERVAL $4
+      GROUP BY date
+      ORDER BY date ASC;
+      ;`,
+      [type, uid, categoryId, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};

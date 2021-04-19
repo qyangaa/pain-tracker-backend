@@ -63,6 +63,7 @@ type RootQuery {
     searchOption(text: String!, categoryId: String!): [Option!]!
     getRecords(numMonths: String): Boolean
     getPainDayData(numMonths: String): LineChart!
+    getDailyTotal(categoryId: String!, categoryName: String!, numMonths: String, type: String!): LineChart!
 }
 
 type RootMutation {
