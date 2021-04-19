@@ -1,3 +1,60 @@
+query getContribution {
+  getContribution(
+    categoryId: "3"
+    categoryName: "exercises"
+    optionId: "16"
+    optionName: "less pain"
+    numMonths: "5"
+    extension: "7"
+  ) {
+    title
+    seriesData {
+      xlabel
+      ylabel
+      data {
+        x
+        y
+      }
+    }
+  }
+}
+query getDailyTotal {
+  getDailyTotal(
+    categoryId: "3"
+    categoryName: "exercises"
+    numMonths: "2"
+    type: "duration"
+  ) {
+    title
+    seriesData {
+      xlabel
+      ylabel
+      data {
+        x
+        y
+      }
+    }
+  }
+}
+
+query getPainDayData {
+  getPainDayData(numMonths: "2") {
+    title
+    seriesData {
+      xlabel
+      ylabel
+      data {
+        x
+        y
+      }
+    }
+  }
+}
+
+query getRecords {
+  getRecords(numMonths: "1")
+}
+
 query GetOption {
   option(id: "18") {
     title
@@ -8,7 +65,7 @@ query GetOption {
 }
 
 query GetLastUsed {
-  lastUsed(uid: "1") {
+  lastUsed {
     _id
     screenType
     hasDuration
@@ -30,16 +87,83 @@ query GetLastUsed {
 mutation createRecords {
   createRecords(
     records: [
-      { _id: 16, categoryId: 1, selected: true, duration: null, amount: null }
-      { _id: 20, categoryId: 2, selected: true, duration: null, amount: null }
-      { _id: 23, categoryId: 3, selected: false, duration: null, amount: null }
+      {
+        _id: "16"
+        categoryId: "1"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "17"
+        categoryId: "1"
+        selected: false
+        duration: null
+        amount: null
+      }
+      {
+        _id: "18"
+        categoryId: "2"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "19"
+        categoryId: "2"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "20"
+        categoryId: "2"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "21"
+        categoryId: "2"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "22"
+        categoryId: "3"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "23"
+        categoryId: "3"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "24"
+        categoryId: "3"
+        selected: true
+        duration: null
+        amount: null
+      }
+      {
+        _id: "25"
+        categoryId: "3"
+        selected: true
+        duration: null
+        amount: null
+      }
     ]
     geoCoordinates: { lon: -121.9808, lat: 37.5502 }
   )
 }
 
 query SearchOption {
-  searchOption(text: "swim yoga happy", categoryId: 3) {
+  searchOption(text: "pole", categoryId: "3") {
     title
     categoryId
     _id
