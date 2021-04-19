@@ -299,3 +299,28 @@ exports.getUserRecordsCategoryDayTotal = async (
     throw error;
   }
 };
+
+exports.getUserRecordsCategoryDayOptions = async (
+  uid,
+  categoryId,
+  numMonths
+) => {
+  try {
+    if (!numMonths) numMonths = "1 month";
+    const results = await db.any(
+      `
+      SELECT date, array_agg(records.option_id) as option_ids, array_agg(title) as option_name
+      FROM records LEFT JOIN options ON(records.option_id = options.option_id)
+      WHERE user_id = $1
+      AND records.category_id = $2
+      AND date >=CURRENT_DATE - INTERVAL $3
+      GROUP BY date
+      ORDER BY date ASC;
+      ;`,
+      [uid, categoryId, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};

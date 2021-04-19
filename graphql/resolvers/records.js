@@ -6,6 +6,7 @@ const {
   getUserRecordsOptions,
   getUserRecordsCategory,
   getUserRecordsCategoryDayTotal,
+  getUserRecordsCategoryDayOptions,
 } = require("../../postgres/queries");
 
 const popular = {
@@ -111,6 +112,50 @@ exports.getDailyTotal = async (args, req) => {
     console.log(results);
     return {
       title: `Everyday ${args.categoryName} ${args.type}`,
+      seriesData: [series],
+    };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getContribution = async (args, req) => {
+  try {
+    const targetData = await getUserRecordsOptions(
+      req.uid,
+      [args.optionId],
+      args.numMonths + " month"
+    );
+    const categoryData = await getUserRecordsCategoryDayOptions(
+      req.uid,
+      args.categoryId,
+      args.numMonths + " month"
+    );
+    // console.log({ targetData, categoryData });
+    const hashMap = {};
+    let start = 0;
+    targetData.forEach((item) => {
+      while (
+        categoryData[start] &&
+        categoryData[start].date <= item.date - parseInt(args.extension)
+      )
+        start++;
+      for (
+        let i = start;
+        categoryData[i] && categoryData[i].date <= item.date;
+        i++
+      ) {
+        for (let optionName of categoryData[i].option_name) {
+          if (!hashMap[optionName]) hashMap[optionName] = 0;
+          hashMap[optionName]++;
+        }
+      }
+    });
+
+    const results = Object.entries(hashMap).map((e) => ({ x: e[0], y: e[1] }));
+    const series = { xlabel: "item", ylabel: "count", data: results };
+    return {
+      title: `Contribution of ${args.categoryName} on ${args.optionName}`,
       seriesData: [series],
     };
   } catch (error) {
