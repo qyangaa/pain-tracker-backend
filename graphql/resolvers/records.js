@@ -106,12 +106,12 @@ exports.getDailyTotal = async (args, req) => {
     );
     const results = [];
     data.forEach((item) => {
-      results.push({ x: item.date, y: item[args.type] });
+      results.push({ x: item.date, y: (item[args.type] / 60).toFixed(2) });
     });
     const series = { xlabel: "date", ylabel: args.type, data: results };
     console.log(results);
     return {
-      title: `Everyday ${args.categoryName} ${args.type}`,
+      title: `Everyday ${args.categoryName} ${args.type} (hrs)`,
       seriesData: [series],
     };
   } catch (error) {
