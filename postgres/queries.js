@@ -324,3 +324,16 @@ exports.getUserRecordsCategoryDayOptions = async (
     throw error;
   }
 };
+
+exports.getCategoryById = async (categoryId) => {
+  try {
+    const results = await db.query(
+      `SELECT * 
+  FROM categories WHERE category_id = $1`,
+      [categoryId]
+    );
+    return results[0];
+  } catch (error) {
+    throw error;
+  }
+};

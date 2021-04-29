@@ -31,6 +31,10 @@ type LineChart {
 type Series {
     xlabel: String!
     ylabel: String!
+    xmin: Float
+    xmax: Float
+    ymin: Float
+    ymax: Float
     data: [SeriesItem]
 }
 
