@@ -199,13 +199,14 @@ exports.getContribution = async (args, req) => {
     });
     const series = { xlabel: "item", ylabel: "count", data: [] };
     if (Object.keys(hashMap).length !== 0) {
-      console.log({ hashMap });
       let sum = Object.values(hashMap).reduce((total, d) => total + d);
       const results = Object.entries(hashMap).map((e) => ({
         x: e[0],
         y: Math.round((e[1] / sum) * 100),
       }));
-      series.data = results;
+      results.sort((d1, d2) => -d1.y + d2.y);
+      console.log(results);
+      series.data = results.slice(0, 10);
     }
     return {
       title: `Contribution of ${args.categoryName} on ${args.optionName}`,
