@@ -8,6 +8,8 @@ const {
   getUserRecordsCategoryDayTotal,
   getUserRecordsCategoryDayOptions,
   getCategoryById,
+  getContributorCategories,
+  getContributeeOptions,
 } = require("../../postgres/queries");
 
 const popular = {
@@ -212,6 +214,17 @@ exports.getContribution = async (args, req) => {
       title: `Contribution of ${args.categoryName} on ${args.optionName}`,
       seriesData: [series],
     };
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getPieChartSelections = async (args, req) => {
+  try {
+    const categories = await getContributorCategories();
+    const options = await getContributeeOptions();
+    console.log({ categories, options });
+    return { categories, options };
   } catch (error) {
     throw error;
   }

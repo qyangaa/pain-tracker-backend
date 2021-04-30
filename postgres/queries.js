@@ -337,3 +337,33 @@ exports.getCategoryById = async (categoryId) => {
     throw error;
   }
 };
+
+exports.getContributorCategories = async () => {
+  try {
+    const results = await db.query(
+      `SELECT category_id AS "id", short_name AS "name"
+  FROM categories WHERE is_contributor`,
+      []
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getContributeeOptions = async () => {
+  try {
+    const results = await db.query(
+      `SELECT category_id AS "categoryId", option_id AS "id", options.title AS "name"
+      FROM options 
+      WHERE category_id IN (
+        SELECT category_id
+        FROM categories
+        WHERE is_contributee)`,
+      []
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};

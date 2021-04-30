@@ -38,10 +38,20 @@ type Series {
     data: [SeriesItem]
 }
 
+type PieChartSelections {
+    categories: [PieChartCategory]!
+    options: [PieChartOption]!
+}
+
+type PieChartCategory {id: Int, name: String}
+type PieChartOption {categoryId: Int, id: Int, name: String}
+
 type SeriesItem {
     x: String
     y: Float
 }
+
+
 
 input recordInput {
     _id: String!
@@ -61,6 +71,7 @@ input geoCoordinates {
 
 
 
+
 type RootQuery {
     option(id: ID!): Option
     lastUsed: [Category!]!
@@ -69,6 +80,7 @@ type RootQuery {
     getPainDayData(numMonths: String!): LineChart!
     getDailyTotal(categoryId: String!, categoryName: String!, numMonths: String!, type: String!): LineChart!
     getContribution(categoryId: String!, categoryName: String!, optionId: String!, optionName: String!, numMonths: String!, extension: String!): LineChart!
+    getPieChartSelections: PieChartSelections!
 }
 
 type RootMutation {
