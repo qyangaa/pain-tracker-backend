@@ -2,15 +2,19 @@ const {
   updateWeather,
   uploadRecords,
   updateLastUsed,
-  getUserRecordsByOptionId,
   getUserRecordsOptions,
-  getUserRecordsCategory,
-  getUserRecordsCategoryDayTotal,
   getUserRecordsCategoryDayOptions,
-  getCategoryById,
   getContributorCategories,
   getContributeeOptions,
 } = require("../../postgres/queries");
+
+const lineCharts = require("./charts/lineCharts.js");
+
+const lineTypes = {
+  PAIN_LEVEL: "pain level",
+  EXERCISE_DURATION: "exercise duration",
+  MOOD_LEVEL: "mood level",
+};
 
 const popular = {
   1: [16, 17],
@@ -69,98 +73,32 @@ exports.createRecords = async (args, req) => {
   }
 };
 
-class DataRange {
-  constructor() {
-    this.xmin = Number.MAX_VALUE;
-    this.xmax = Number.MIN_VALUE;
-    this.ymin = Number.MAX_VALUE;
-    this.ymax = Number.MIN_VALUE;
-  }
-  update({ x, y }) {
-    this.xmin = Math.min(this.xmin, x);
-    this.xmax = Math.max(this.xmax, x);
-    this.ymin = Math.min(this.ymin, y);
-    this.ymax = Math.max(this.ymax, y);
-  }
-  get() {
-    return {
-      xmin: this.xmin,
-      xmax: this.xmax,
-      ymin: this.ymin,
-      ymax: this.ymax,
-    };
-  }
-}
-
-exports.getPainDayData = async (args, req) => {
+exports.getLineChart = async (args, req) => {
   try {
-    const data = await getUserRecordsOptions(
-      req.uid,
-      [16, 17],
-      args.numMonths + " month"
-    );
-    let painLevel = 0;
-    const results = [];
-    const range = new DataRange();
-    data.forEach((item) => {
-      if (item.option_id === 16) painLevel--;
-      else painLevel++;
-      if (
-        results.length &&
-        results[results.length - 1].date &&
-        results[results.length - 1].date.toDateString() ==
-          item.date.toDateString()
-      )
-        results.pop();
-      let x = item.date;
-      let y = painLevel;
-      range.update({ x, y });
-      results.push({ x, y });
-    });
-    const series = {
-      xlabel: "date",
-      ylabel: "pain level",
-      ...range.get(),
-      data: results,
-    };
-    // console.log(results);
-    // console.log(series);
-    return { title: "Trend of my pain level", seriesData: [series] };
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.getDailyTotal = async (args, req) => {
-  try {
-    const data = await getUserRecordsCategoryDayTotal(
-      req.uid,
-      args.categoryId,
-      args.numMonths + " month",
-      args.type
-    );
-
-    const categoryInfo = await getCategoryById(args.categoryId);
-    // console.log(categoryInfo);
-    const results = [];
-    const range = new DataRange();
-    data.forEach((item) => {
-      let x = item.date;
-      let y = (item[args.type] / 60).toFixed(1);
-      range.update({ x, y });
-      results.push({ x, y });
-    });
-    const series = {
-      xlabel: "date",
-      ylabel: categoryInfo.short_name + " " + args.type,
-      ...range.get(),
-      data: results,
-    };
-    // console.log(series);
-    return {
-      title: `Everyday ${args.categoryName} ${args.type} (hrs)`,
-      seriesData: [series],
-    };
+    if (Object.values(lineTypes).indexOf(args.type) === -1)
+      throw new Error("Invalid lineType");
+    let data;
+    let yTransformation;
+    switch (args.type) {
+      case lineTypes.PAIN_LEVEL:
+        args.categoryId = 1;
+        args.categoryName = "pain";
+        data = await lineCharts.getAggregate(args, req);
+        return data;
+      case lineTypes.EXERCISE_DURATION:
+        args.categoryId = 3;
+        args.categoryName = "exercise";
+        args.type = "duration";
+        args.unit = "hrs";
+        yTransformation = (d) => (d / 60).toFixed(1);
+        data = await lineCharts.getDailyTotal(args, req, yTransformation);
+        return data;
+      case lineTypes.MOOD_LEVEL:
+        args.categoryId = 2;
+        args.categoryName = "mood";
+        data = await lineCharts.getAggregate(args, req);
+        return data;
+    }
   } catch (error) {
     throw error;
   }
@@ -226,30 +164,6 @@ exports.getPieChartSelections = async (args, req) => {
     const options = await getContributeeOptions();
     console.log({ categories, options });
     return { categories, options };
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.getRecords = async (args, req) => {
-  try {
-    const results = await getUserRecordsByOptionId(
-      req.uid,
-      16,
-      args.numMonths + " month"
-    );
-    // console.log({ results });
-    return true;
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.getRecordsTemplate = async (args, req) => {
-  try {
-    const results = await getRecordsByUser(req.uid, args.numMonths + " month");
-    // console.log({ results });
-    return true;
   } catch (error) {
     throw error;
   }

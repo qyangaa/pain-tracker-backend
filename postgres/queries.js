@@ -364,3 +364,22 @@ exports.getContributeeOptions = async () => {
     throw error;
   }
 };
+
+exports.getPositivity = async (categoryId) => {
+  try {
+    const positives = await db.query(
+      `SELECT option_id FROM options where positive and category_id = $1`,
+      [categoryId]
+    );
+    const negatives = await db.query(
+      `SELECT option_id FROM options where not positive and category_id = $1`,
+      [categoryId]
+    );
+    return {
+      positives: new Set(positives.map((d) => d.option_id)),
+      negatives: new Set(negatives.map((d) => d.option_id)),
+    };
+  } catch (error) {
+    throw error;
+  }
+};
