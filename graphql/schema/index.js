@@ -44,7 +44,7 @@ type PieChartSelections {
 }
 
 type PieChartCategory {id: Int, name: String}
-type PieChartOption {categoryId: Int, id: Int, name: String}
+type PieChartOption {id: Int, name: String}
 
 type SeriesItem {
     x: String

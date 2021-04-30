@@ -354,12 +354,9 @@ exports.getContributorCategories = async () => {
 exports.getContributeeOptions = async () => {
   try {
     const results = await db.query(
-      `SELECT category_id AS "categoryId", option_id AS "id", options.title AS "name"
+      `SELECT option_id AS "id", options.title AS "name"
       FROM options 
-      WHERE category_id IN (
-        SELECT category_id
-        FROM categories
-        WHERE is_contributee)`,
+      WHERE is_contributee`,
       []
     );
     return results;

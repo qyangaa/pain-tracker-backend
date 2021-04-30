@@ -178,8 +178,7 @@ exports.getContribution = async (args, req) => {
       args.categoryId,
       args.numMonths + " month"
     );
-
-    // console.log({ targetData, categoryData });
+    // console.log(targetData[0], categoryData[0]);
     const hashMap = {};
     let start = 0;
     targetData.forEach((item) => {
@@ -200,6 +199,8 @@ exports.getContribution = async (args, req) => {
       }
     });
     const series = { xlabel: "item", ylabel: "count", data: [] };
+    // console.log(hashMap);
+
     if (Object.keys(hashMap).length !== 0) {
       let sum = Object.values(hashMap).reduce((total, d) => total + d);
       const results = Object.entries(hashMap).map((e) => ({
@@ -207,7 +208,7 @@ exports.getContribution = async (args, req) => {
         y: Math.round((e[1] / sum) * 100),
       }));
       results.sort((d1, d2) => -d1.y + d2.y);
-      console.log(results);
+      // console.log(results);
       series.data = results.slice(0, 10);
     }
     return {
