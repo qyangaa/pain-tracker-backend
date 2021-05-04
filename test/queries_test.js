@@ -184,7 +184,6 @@ describe("queries.js", () => {
           categoryId,
           numMonths,
         });
-        console.log(result);
         const option_ids = [];
         records.forEach((d) => {
           if (d.categoryId == categoryId) option_ids.push(d._id);
@@ -203,7 +202,6 @@ describe("queries.js", () => {
         result.forEach((d) => {
           found.add(d._id);
         });
-        console.log(found);
         assert(found.has(1));
         assert(found.has(2));
         assert(found.has(3));
@@ -217,7 +215,6 @@ describe("queries.js", () => {
         result.forEach((d) => {
           found.add(d._id);
         });
-        console.log(found);
         assert(found.has(16));
         assert(found.has(17));
         assert(found.has(19));
@@ -231,6 +228,22 @@ describe("queries.js", () => {
         assert(result.negatives.has(16));
         assert(result.positives.has(17));
       });
+    });
+  });
+
+  describe("searchOptionQuery()", () => {
+    it("search should give correct results", async () => {
+      const text = "happy ";
+      const categoryId = 2;
+      const result = await searchOptionQuery({ text, categoryId });
+      const expectedOption = {
+        _id: 20,
+        categoryId: 2,
+        title: "happy",
+        defaultValue: 0,
+        iconName: "happy",
+      };
+      assert.deepStrictEqual(result[0], expectedOption);
     });
   });
 });

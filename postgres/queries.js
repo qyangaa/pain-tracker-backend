@@ -64,7 +64,7 @@ exports.getCategoryById = async ({ categoryId }) => {
 /**
  * load options with given ids
  * @param {{optionIds: [number]}}
- * @return {[{_id: number, categoryId: number, title: string, defualtValue: number, iconName: string}]}
+ * @return {[{_id: number, categoryId: number, title: string, defaultValue: number, iconName: string}]}
  */
 exports.optionsLoader = async ({ optionIds }) => {
   try {
@@ -72,7 +72,7 @@ exports.optionsLoader = async ({ optionIds }) => {
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
-      p.defualt_value as "defaultValue", 
+      p.default_value as "defaultValue", 
       p.icon_name as "iconName"
       FROM options p 
       WHERE p.option_id = ANY($1::int[])
@@ -237,13 +237,14 @@ exports.updateLastUsed = async ({ uid, lastUsed }) => {
  * @return {{Id: number, categoryId: Number, title: string, iconName: string}}
  */
 exports.searchOptionQuery = async ({ text, categoryId }) => {
-  const tsquery = text.split(" ").join("|");
+  const tsquery = text.trim().split(" ").join("|");
+
   try {
     const results = await db.any(
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
-      p.value, 
+      p.default_value as "defaultValue", 
       p.icon_name AS "iconName"
       FROM options p 
         WHERE p.category_id = $1 AND vector_field @@ to_tsquery($2)
