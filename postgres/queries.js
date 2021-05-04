@@ -3,7 +3,9 @@ const fetch = require("node-fetch");
 const math = require("mathjs");
 const DataLoader = require("dataloader");
 
-exports.getUid = async (authId) => {
+const defualtNumMonths = "1 month";
+
+exports.getUid = async ({ authId }) => {
   try {
     const results = await db.query(
       `SELECT user_id 
@@ -16,32 +18,45 @@ exports.getUid = async (authId) => {
   }
 };
 
-exports.categoriesLoader = new DataLoader(async (categoryIds) => {
+exports.categoriesLoader = async ({ categoryIds }) => {
+  try {
+    const results = await db.query(
+      `SELECT category_id AS _id,
+      short_name AS name,
+      TRIM (title) AS Title
+      FROM categories WHERE category_id = ANY($1::int[])`,
+      [categoryIds]
+    );
+
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.getCategoryById = async ({ categoryId }) => {
   try {
     const results = await db.query(
       `SELECT category_id AS _id,
       short_name AS name,
       TRIM (title) AS Title,
-      TRIM (screen_type) AS "screenType",
-      has_duration as "hasDuration",
-      TRIM (background_image) as "backgroundImage"
-      FROM categories WHERE category_id = ANY($1::int[])`,
-      [categoryIds]
+      is_contributor AS "isContributor"
+  FROM categories WHERE category_id = $1`,
+      [categoryId]
     );
-    return results;
+    return results[0];
   } catch (error) {
     throw error;
   }
-});
+};
 
-exports.optionsLoader = new DataLoader(async (optionIds) => {
+exports.optionsLoader = async ({ optionIds }) => {
   try {
     const results = await db.any(
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
-      p.duration, 
-      p.amount,
+      p.defualt_value as "defaultValue", 
       p.icon_name
       FROM options p 
       WHERE p.option_id = ANY($1::int[])
@@ -52,15 +67,14 @@ exports.optionsLoader = new DataLoader(async (optionIds) => {
   } catch (error) {
     throw error;
   }
-});
+};
 
-exports.getLastUsed = async (uid) => {
+exports.getLastUsed = async ({ uid }) => {
   try {
     const results = await db.query(
       `SELECT options, 
       selected, 
-      duration, 
-      amount 
+      value
       FROM last_useds WHERE user_id = $1`,
       [uid]
     );
@@ -71,19 +85,7 @@ exports.getLastUsed = async (uid) => {
   }
 };
 
-exports.getIconSVG = async (iconId) => {
-  try {
-    const results = await db.query("SELECT svg FROM icons WHERE icon_id = $1", [
-      iconId,
-    ]);
-    const row = results;
-    return row[0];
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.updateWeather = async (geoCoordinates, date, uid) => {
+exports.updateWeather = async ({ geoCoordinates, date, uid }) => {
   try {
     const { lon, lat } = geoCoordinates;
     const weatherUrl = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${process.env.WEATHER}`;
@@ -137,18 +139,18 @@ exports.updateWeather = async (geoCoordinates, date, uid) => {
   }
 };
 
-exports.uploadRecords = async (uid, records) => {
+exports.uploadRecords = async ({ uid, records, date }) => {
   try {
     const cs = new pgp.helpers.ColumnSet(
-      ["user_id", "option_id", "category_id", "duration", "amount"],
+      ["user_id", "option_id", "category_id", "value", "date"],
       { table: "records" }
     );
     const values = records.map((record) => ({
       option_id: record._id,
       user_id: uid,
       category_id: record.categoryId,
-      duration: record.duration,
-      amount: record.amount,
+      value: record.value,
+      date,
     }));
     const query = pgp.helpers.insert(values, cs);
     await db.none(query);
@@ -158,13 +160,27 @@ exports.uploadRecords = async (uid, records) => {
   }
 };
 
-exports.updateLastUsed = async (uid, lastUsed) => {
+exports.getLastUploadedRecords = async ({ uid, count }) => {
+  try {
+    const results = await db.query(
+      `select option_id as "_id",
+      category_id as "categoryId",
+      value
+      from records WHERE user_id = $1  ORDER BY record_id DESC LIMIT $2`,
+      [uid, count]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+exports.updateLastUsed = async ({ uid, lastUsed }) => {
   try {
     const csLastUsed = new pgp.helpers.ColumnSet(
-      ["user_id", "options", "selected", "duration", "amount"],
+      ["options", "selected", "value"],
       { table: "last_useds" }
     );
-    lastUsed.user_id = lastUsed._id;
     const condition = pgp.as.format("WHERE user_id = $1", uid);
     const query = pgp.helpers.update(lastUsed, csLastUsed) + condition;
     await db.none(query);
@@ -174,7 +190,7 @@ exports.updateLastUsed = async (uid, lastUsed) => {
   }
 };
 
-exports.searchOptionQuery = async (text, categoryId) => {
+exports.searchOptionQuery = async ({ text, categoryId }) => {
   const tsquery = text.split(" ").join("|");
   try {
     const results = await db.any(
@@ -195,51 +211,32 @@ exports.searchOptionQuery = async (text, categoryId) => {
   }
 };
 
-exports.getRecordsByUser = async (uid, from) => {
+exports.deleteUserRecords = async ({ uid }) => {
   try {
-    if (!from) from = "1 month";
     const results = await db.any(
       `
-      SELECT *
-      FROM records
+      DELETE FROM records
       WHERE user_id = $1
-      AND date >=CURRENT_DATE - INTERVAL $2
-      ORDER BY date ASC;
       ;`,
-      [uid, from]
+      [uid]
     );
-    return results;
+    return true;
   } catch (error) {
     throw error;
   }
 };
 
-exports.getUserRecordsByOptionId = async (uid, optionId, numMonths) => {
+exports.getUserRecordsByOptions = async ({
+  uid,
+  optionIds,
+  numMonths = defualtNumMonths,
+}) => {
   try {
-    if (!numMonths) numMonths = "1 month";
     const results = await db.any(
       `
-      SELECT *
-      FROM records
-      WHERE user_id = $1
-      AND option_id = $2
-      AND date >=CURRENT_DATE - INTERVAL $3
-      ORDER BY date ASC;
-      ;`,
-      [uid, optionId, numMonths]
-    );
-    return results;
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.getUserRecordsOptions = async (uid, optionIds, numMonths) => {
-  try {
-    if (!numMonths) numMonths = "1 month";
-    const results = await db.any(
-      `
-      SELECT *
+      SELECT option_id as "optionId",
+      value,
+      date
       FROM records
       WHERE user_id = $1
       AND option_id = ANY($2::int[])
@@ -254,16 +251,26 @@ exports.getUserRecordsOptions = async (uid, optionIds, numMonths) => {
   }
 };
 
-exports.getUserRecordsCategory = async (uid, categoryId, numMonths) => {
+/**
+ * Returns list of date and sum of values of records with given categoryId within numMonths
+ * @function
+ * @param {*} inputArg
+ * @returns {[{date: Date, value: Number}]}
+ */
+exports.getUserRecordsByCategoryDayTotal = async ({
+  uid,
+  categoryId,
+  numMonths = defualtNumMonths,
+}) => {
   try {
-    if (!numMonths) numMonths = "1 month";
     const results = await db.any(
       `
-      SELECT *
+      SELECT date, SUM(value) AS value
       FROM records
       WHERE user_id = $1
       AND category_id = $2
       AND date >=CURRENT_DATE - INTERVAL $3
+      GROUP BY date
       ORDER BY date ASC;
       ;`,
       [uid, categoryId, numMonths]
@@ -274,42 +281,21 @@ exports.getUserRecordsCategory = async (uid, categoryId, numMonths) => {
   }
 };
 
-exports.getUserRecordsCategoryDayTotal = async (
+/**
+ * Returns list of optionIds and names of records with given categoryId within numMonths
+ * @function
+ * @param {*} inputArg
+ * @returns {[{date: Date, optionIds: [Number], optionName: [String]}]}
+ */
+exports.getUserRecordsByCategoryDayOptions = async ({
   uid,
   categoryId,
-  numMonths,
-  type
-) => {
+  numMonths = defualtNumMonths,
+}) => {
   try {
-    if (!numMonths) numMonths = "1 month";
     const results = await db.any(
       `
-      SELECT date, SUM($1:name) AS $1:name
-      FROM records
-      WHERE user_id = $2
-      AND category_id = $3
-      AND date >=CURRENT_DATE - INTERVAL $4
-      GROUP BY date
-      ORDER BY date ASC;
-      ;`,
-      [type, uid, categoryId, numMonths]
-    );
-    return results;
-  } catch (error) {
-    throw error;
-  }
-};
-
-exports.getUserRecordsCategoryDayOptions = async (
-  uid,
-  categoryId,
-  numMonths
-) => {
-  try {
-    if (!numMonths) numMonths = "1 month";
-    const results = await db.any(
-      `
-      SELECT date, array_agg(records.option_id) as option_ids, array_agg(title) as option_name
+      SELECT date, array_agg(records.option_id) as "optionIds", array_agg(title) as "optionName"
       FROM records LEFT JOIN options ON(records.option_id = options.option_id)
       WHERE user_id = $1
       AND records.category_id = $2
@@ -325,23 +311,10 @@ exports.getUserRecordsCategoryDayOptions = async (
   }
 };
 
-exports.getCategoryById = async (categoryId) => {
-  try {
-    const results = await db.query(
-      `SELECT * 
-  FROM categories WHERE category_id = $1`,
-      [categoryId]
-    );
-    return results[0];
-  } catch (error) {
-    throw error;
-  }
-};
-
 exports.getContributorCategories = async () => {
   try {
     const results = await db.query(
-      `SELECT category_id AS "id", short_name AS "name"
+      `SELECT category_id AS "_id", short_name AS "name"
   FROM categories WHERE is_contributor`,
       []
     );
@@ -354,7 +327,7 @@ exports.getContributorCategories = async () => {
 exports.getContributeeOptions = async () => {
   try {
     const results = await db.query(
-      `SELECT option_id AS "id", options.title AS "name"
+      `SELECT option_id AS "_id", options.title AS "name"
       FROM options 
       WHERE is_contributee`,
       []
@@ -365,7 +338,7 @@ exports.getContributeeOptions = async () => {
   }
 };
 
-exports.getPositivity = async (categoryId) => {
+exports.getPositivity = async ({ categoryId }) => {
   try {
     const positives = await db.query(
       `SELECT option_id FROM options where positive and category_id = $1`,

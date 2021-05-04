@@ -59,6 +59,8 @@ exports.getAggregate = async (args, req) => {
     const series = {
       xlabel: "date",
       ylabel: `${args.categoryName} level`,
+      xunit: "date",
+      yunit: "",
       ...range.get(),
       data: results,
     };
@@ -94,8 +96,10 @@ exports.getDailyTotal = async (args, req, yTransformation = (d) => d) => {
     });
     const series = {
       xlabel: "date",
-      ylabel: categoryInfo.short_name + " " + args.type,
+      ylabel: categoryInfo.name + " " + args.type,
       ...range.get(),
+      xunit: "date",
+      yunit: args.unit,
       data: results,
     };
     // console.log(series);

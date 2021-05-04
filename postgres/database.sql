@@ -129,7 +129,6 @@ CREATE TABLE records(
     option_id INTEGER REFERENCES options(option_id) NOT NULL,
     category_id INTEGER REFERENCES categories(category_id) NOT NULL,
     duration INTEGER,
-    amount REAL
 );
 
 

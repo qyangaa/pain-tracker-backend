@@ -1,7 +1,8 @@
+// uncomment to log query into console
 const initOptions = {
-  query(e) {
-    console.log(e.query);
-  },
+  // query(e) {
+  //   console.log(e.query);
+  // },
 };
 const pgp = require("pg-promise")(initOptions);
 const dbConfig = require("../hidden/dbConfig");

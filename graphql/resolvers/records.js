@@ -2,7 +2,7 @@ const {
   updateWeather,
   uploadRecords,
   updateLastUsed,
-  getUserRecordsOptions,
+  getUserRecordsByOptions,
   getUserRecordsCategoryDayOptions,
   getContributorCategories,
   getContributeeOptions,
@@ -34,8 +34,7 @@ exports.createRecords = async (args, req) => {
       options: [],
       categories: [],
       selected: [],
-      duration: [],
-      amount: [],
+      value: [],
       _id: req.uid,
     };
     const category2Options = {};
@@ -49,8 +48,7 @@ exports.createRecords = async (args, req) => {
       category2Options[categoryId].add(parseInt(record._id));
 
       lastUsed.selected.push(true);
-      lastUsed.duration.push(parseInt(record.duration) ? record.duration : 0);
-      lastUsed.amount.push(parseInt(record.amount) ? record.amount : 0);
+      lastUsed.value.push(parseInt(record.value) ? record.value : 0);
     });
 
     for (const [categoryId, options] of Object.entries(category2Options)) {
@@ -61,8 +59,7 @@ exports.createRecords = async (args, req) => {
         lastUsed.options.push(id);
         lastUsed.categories.push(categoryId);
         lastUsed.selected.push(false);
-        lastUsed.duration.push(0);
-        lastUsed.amount.push(0);
+        lastUsed.value.push(0);
         if (options.length >= 4) break;
       }
     }
@@ -104,9 +101,16 @@ exports.getLineChart = async (args, req) => {
   }
 };
 
+exports.getLineChartSelections = () => {
+  return Object.entries(lineTypes).map(([key, value]) => ({
+    id: key,
+    name: value,
+  }));
+};
+
 exports.getContribution = async (args, req) => {
   try {
-    const targetData = await getUserRecordsOptions(
+    const targetData = await getUserRecordsByOptions(
       req.uid,
       [args.optionId],
       args.numMonths + " month"
@@ -130,7 +134,7 @@ exports.getContribution = async (args, req) => {
         categoryData[i] && categoryData[i].date <= item.date;
         i++
       ) {
-        for (let optionName of categoryData[i].option_name) {
+        for (let optionName of categoryData[i].optionName) {
           if (!hashMap[optionName]) hashMap[optionName] = 0;
           hashMap[optionName]++;
         }

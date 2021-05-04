@@ -28,6 +28,10 @@ type LineChart {
     seriesData: [Series]
 }
 
+type LineChartOption {
+    _id: String, name: String
+}
+
 type Series {
     xlabel: String!
     ylabel: String!
@@ -35,6 +39,8 @@ type Series {
     xmax: Float
     ymin: Float
     ymax: Float
+    xunit: String!
+    yunit: String!
     data: [SeriesItem]
 }
 
@@ -43,8 +49,8 @@ type PieChartSelections {
     options: [PieChartOption]!
 }
 
-type PieChartCategory {id: Int, name: String}
-type PieChartOption {id: Int, name: String}
+type PieChartCategory {_id: Int, name: String}
+type PieChartOption {_id: Int, name: String}
 
 type SeriesItem {
     x: String
@@ -72,12 +78,14 @@ input geoCoordinates {
 
 
 
+
 type RootQuery {
     option(id: ID!): Option
     lastUsed: [Category!]!
     searchOption(text: String!, categoryId: String!): [Option!]!
     getRecords(numMonths: String): Boolean
     getLineChart(numMonths: String!, type: String!, arg: String): LineChart!
+    getLineChartSelections: [LineChartOption!]!
     getContribution(categoryId: String!, categoryName: String!, optionId: String!, optionName: String!, numMonths: String!, extension: String!): LineChart!
     getPieChartSelections: PieChartSelections!
 }
