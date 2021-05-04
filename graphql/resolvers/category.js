@@ -59,7 +59,7 @@ exports.lastUsed = async (args, req) => {
       const categoryId = option.categoryId;
       categoryIds.add(categoryId);
       // Get Url
-      const { src, srcActive } = getIconUrl(option.icon_name, "reactNative");
+      const { src, srcActive } = getIconUrl(option.iconName, "reactNative");
       option.src = src;
       option.srcActive = srcActive;
       if (!category2options[categoryId])
@@ -90,7 +90,7 @@ exports.lastUsed = async (args, req) => {
 exports.searchOption = async (args, req) => {
   const options = await searchOptionQuery(args.text.trim(), args.categoryId);
   options.forEach((option) => {
-    const { src, srcActive } = getIconUrl(option.icon_name, "reactNative");
+    const { src, srcActive } = getIconUrl(option.iconName, "reactNative");
     option.src = src;
     option.srcActive = srcActive;
     option.selected = true;

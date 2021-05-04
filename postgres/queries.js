@@ -1,10 +1,11 @@
 const { db, pgp } = require("./db");
 const fetch = require("node-fetch");
 const math = require("mathjs");
-const DataLoader = require("dataloader");
-
-const defualtNumMonths = "1 month";
-
+/**
+ * get user id stored in db using corresponding authentication id
+ * @param {{authId: number}}
+ * @returns {Number} user_id
+ */
 exports.getUid = async ({ authId }) => {
   try {
     const results = await db.query(
@@ -18,6 +19,11 @@ exports.getUid = async ({ authId }) => {
   }
 };
 
+/**
+ * load categories with given ids
+ * @param {{categories: [number]}}
+ * @return {[{_id: number, name: string, title: string}]}
+ */
 exports.categoriesLoader = async ({ categoryIds }) => {
   try {
     const results = await db.query(
@@ -34,6 +40,11 @@ exports.categoriesLoader = async ({ categoryIds }) => {
   }
 };
 
+/**
+ * load single category with given categoryId
+ * @param {{categoryId: number}}
+ * @return {[{_id: number, name: string, isContributor:boolean, title: string}]}
+ */
 exports.getCategoryById = async ({ categoryId }) => {
   try {
     const results = await db.query(
@@ -50,6 +61,11 @@ exports.getCategoryById = async ({ categoryId }) => {
   }
 };
 
+/**
+ * load options with given ids
+ * @param {{optionIds: [number]}}
+ * @return {[{_id: number, categoryId: number, title: string, defualtValue: number, iconName: string}]}
+ */
 exports.optionsLoader = async ({ optionIds }) => {
   try {
     const results = await db.any(
@@ -57,7 +73,7 @@ exports.optionsLoader = async ({ optionIds }) => {
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
       p.defualt_value as "defaultValue", 
-      p.icon_name
+      p.icon_name as "iconName"
       FROM options p 
       WHERE p.option_id = ANY($1::int[])
       ;`,
@@ -69,6 +85,11 @@ exports.optionsLoader = async ({ optionIds }) => {
   }
 };
 
+/**
+ * get optionIds, whether selected, and values of last records user upload
+ * @param {{uid: number}}
+ * @return {[{options: [number], selected: [boolean], value: [number]}]}
+ */
 exports.getLastUsed = async ({ uid }) => {
   try {
     const results = await db.query(
@@ -85,6 +106,11 @@ exports.getLastUsed = async ({ uid }) => {
   }
 };
 
+/**
+ * get weather information of given geoCoordinates and date from openweathermap.org and upload to weathers table
+ * @param {{geoCoordinates: { lon: number, lat: number}, date: date, uid: number}}
+ * @return boolean
+ */
 exports.updateWeather = async ({ geoCoordinates, date, uid }) => {
   try {
     const { lon, lat } = geoCoordinates;
@@ -139,6 +165,11 @@ exports.updateWeather = async ({ geoCoordinates, date, uid }) => {
   }
 };
 
+/**
+ * upload records to records table
+ * @param {{uid: Number, records: {_id: Number,categoryId: Number,selected: boolean,value: number}, date: Date}}
+ * @return boolean
+ */
 exports.uploadRecords = async ({ uid, records, date }) => {
   try {
     const cs = new pgp.helpers.ColumnSet(
@@ -160,6 +191,11 @@ exports.uploadRecords = async ({ uid, records, date }) => {
   }
 };
 
+/**
+ * get last <count> uploaded records
+ * @param {{uid: Number, count: number}}
+ * @return {{_id: number, categoryId: number, value: number}}
+ */
 exports.getLastUploadedRecords = async ({ uid, count }) => {
   try {
     const results = await db.query(
@@ -175,6 +211,11 @@ exports.getLastUploadedRecords = async ({ uid, count }) => {
   }
 };
 
+/**
+ * update last used table
+ * @param {{uid: Number, lastUsed: {options: [number], selected: [boolean], value: [number]}}}
+ * @return boolean
+ */
 exports.updateLastUsed = async ({ uid, lastUsed }) => {
   try {
     const csLastUsed = new pgp.helpers.ColumnSet(
@@ -190,6 +231,11 @@ exports.updateLastUsed = async ({ uid, lastUsed }) => {
   }
 };
 
+/**
+ * prefix search in options table
+ * @param {{text: String, categoryId: Number}}
+ * @return {{Id: number, categoryId: Number, title: string, iconName: string}}
+ */
 exports.searchOptionQuery = async ({ text, categoryId }) => {
   const tsquery = text.split(" ").join("|");
   try {
@@ -197,9 +243,8 @@ exports.searchOptionQuery = async ({ text, categoryId }) => {
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
-      p.duration, 
-      p.amount,
-      p.icon_name
+      p.value, 
+      p.icon_name AS "iconName"
       FROM options p 
         WHERE p.category_id = $1 AND vector_field @@ to_tsquery($2)
         ;`,
@@ -211,6 +256,11 @@ exports.searchOptionQuery = async ({ text, categoryId }) => {
   }
 };
 
+/**
+ * DO NOT USE IN PRODUCTION: delete all records of a user, used for development and testing
+ * @param {{uid: number}}
+ * @return boolean
+ */
 exports.deleteUserRecords = async ({ uid }) => {
   try {
     const results = await db.any(
@@ -226,10 +276,15 @@ exports.deleteUserRecords = async ({ uid }) => {
   }
 };
 
+/**
+ * get records of user given list of optionIds and within numMonths from today
+ * @param {{uid: number, optionIds: [number], numMonths: String}}
+ * @return {[{optionId: number, value: number, date: Date}]}
+ */
 exports.getUserRecordsByOptions = async ({
   uid,
   optionIds,
-  numMonths = defualtNumMonths,
+  numMonths = "1 month",
 }) => {
   try {
     const results = await db.any(
@@ -252,15 +307,14 @@ exports.getUserRecordsByOptions = async ({
 };
 
 /**
- * Returns list of date and sum of values of records with given categoryId within numMonths
- * @function
- * @param {*} inputArg
- * @returns {[{date: Date, value: Number}]}
+ * Return accumulated value of records in given category within numMonths from today
+ * @param {{uid: number, optionIds: [number], numMonths: String}}
+ * @return {[{value: number, date: Date}]}
  */
 exports.getUserRecordsByCategoryDayTotal = async ({
   uid,
   categoryId,
-  numMonths = defualtNumMonths,
+  numMonths = "1 month",
 }) => {
   try {
     const results = await db.any(
@@ -283,19 +337,18 @@ exports.getUserRecordsByCategoryDayTotal = async ({
 
 /**
  * Returns list of optionIds and names of records with given categoryId within numMonths
- * @function
- * @param {*} inputArg
- * @returns {[{date: Date, optionIds: [Number], optionName: [String]}]}
+ * @param {{uid: number, optionIds: [number], numMonths: String}}
+ * @return {[{date: Date, optionIds: [number], optionNames: [string]}]}
  */
 exports.getUserRecordsByCategoryDayOptions = async ({
   uid,
   categoryId,
-  numMonths = defualtNumMonths,
+  numMonths = "1 month",
 }) => {
   try {
     const results = await db.any(
       `
-      SELECT date, array_agg(records.option_id) as "optionIds", array_agg(title) as "optionName"
+      SELECT date, array_agg(records.option_id) as "optionIds", array_agg(title) as "optionNames"
       FROM records LEFT JOIN options ON(records.option_id = options.option_id)
       WHERE user_id = $1
       AND records.category_id = $2
@@ -311,6 +364,10 @@ exports.getUserRecordsByCategoryDayOptions = async ({
   }
 };
 
+/**
+ * Return category ids and names who are contributors as defined in database
+ * @return {[{_id: number, name: string}]}
+ */
 exports.getContributorCategories = async () => {
   try {
     const results = await db.query(
@@ -324,6 +381,10 @@ exports.getContributorCategories = async () => {
   }
 };
 
+/**
+ * Return option ids and names who are contributees as defined in database
+ * @return {[{_id: number, name: string}]}
+ */
 exports.getContributeeOptions = async () => {
   try {
     const results = await db.query(
@@ -338,6 +399,10 @@ exports.getContributeeOptions = async () => {
   }
 };
 
+/**
+ * Return set of option ids who's value has positive indication or negative indication
+ * @return {{positives: Set<number>, negatives: Set<number>}}
+ */
 exports.getPositivity = async ({ categoryId }) => {
   try {
     const positives = await db.query(

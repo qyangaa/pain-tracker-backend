@@ -1,4 +1,5 @@
 const {
+  getUid,
   updateWeather,
   uploadRecords,
   updateLastUsed,

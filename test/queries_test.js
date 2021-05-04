@@ -60,7 +60,7 @@ describe("queries.js", () => {
           categoryId: 1,
           title: "less pain",
           defaultValue: null,
-          icon_name: "heart",
+          iconName: "heart",
         },
       ]);
     });
@@ -190,7 +190,7 @@ describe("queries.js", () => {
           if (d.categoryId == categoryId) option_ids.push(d._id);
         });
         assert.deepStrictEqual(result[0].optionIds, option_ids);
-        assert.deepStrictEqual(result[0].optionName, option_names);
+        assert.deepStrictEqual(result[0].optionNames, option_names);
       });
     });
   });
@@ -224,7 +224,7 @@ describe("queries.js", () => {
       });
     });
 
-    describe.only("getPositivity()", () => {
+    describe("getPositivity()", () => {
       it("option 16 should be negative and 17 should be positive", async () => {
         const categoryId = 1;
         const result = await getPositivity({ categoryId });
