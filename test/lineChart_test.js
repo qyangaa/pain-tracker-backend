@@ -54,7 +54,9 @@ describe("lineCharts.js", () => {
   describe("getAggregate()", () => {
     beforeEach(async () => {
       const args = { categoryId: 1, numMonths: 1, categoryName: "test name" };
-      result = await lineCharts.getAggregate(args, req, {
+      result = await lineCharts.getAggregate({
+        args,
+        req,
         getUserRecordsByCategory,
         getPositivity,
       });
@@ -81,20 +83,22 @@ describe("lineCharts.js", () => {
       assert.deepStrictEqual(result.seriesData[0].ymin, range.ymin);
       assert.deepStrictEqual(result.seriesData[0].ymax, range.ymax);
     });
+    it("should work without injections", async () => {
+      const args = { categoryId: 1, numMonths: 1, categoryName: "test name" };
+      result = await lineCharts.getAggregate({ args, req });
+    });
   });
 
   describe("getDailyTotal()", () => {
     beforeEach(async () => {
       const args = { categoryId: 1, numMonths: 1, categoryName: "test name" };
-      result = await lineCharts.getDailyTotal(
+      result = await lineCharts.getDailyTotal({
         args,
         req,
-        (yTransformation = (d) => d + 1),
-        {
-          getUserRecordsByCategoryDayTotal,
-          getCategoryById,
-        }
-      );
+        yTransformation: (d) => d + 1,
+        getUserRecordsByCategoryDayTotal,
+        getCategoryById,
+      });
     });
     it("should return correct aggregated data over days", async () => {
       const results = [
@@ -117,6 +121,13 @@ describe("lineCharts.js", () => {
       assert.deepStrictEqual(result.seriesData[0].xmax, range.xmax);
       assert.deepStrictEqual(result.seriesData[0].ymin, range.ymin);
       assert.deepStrictEqual(result.seriesData[0].ymax, range.ymax);
+    });
+    it("should work without injections", async () => {
+      const args = { categoryId: 1, numMonths: 1, categoryName: "test name" };
+      result = await lineCharts.getDailyTotal({
+        args,
+        req,
+      });
     });
   });
 });

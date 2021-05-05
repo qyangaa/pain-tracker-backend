@@ -1,19 +1,23 @@
 const queries = require("../../../postgres/queries");
 
 const utils = require("../utils/chartsUtils");
-
 /**
  * aggregate data by count according to whether they belong to positives or negatives
  * @return {{title: string, seriesData: [{ xlabel: string, ylabel: string, xunit: string, yunit: string, xmin: Date, xmax: Date, ymin: number, ymax: number, data: [{x: Date, y: number}]}]}}
  */
-exports.getAggregate = async (
+
+exports.lineTypes = {
+  PAIN_LEVEL: "pain level",
+  EXERCISE_DURATION: "exercise duration",
+  MOOD_LEVEL: "mood level",
+};
+
+exports.getAggregate = async ({
   args,
   req,
-  {
-    getUserRecordsByCategory = queries.getUserRecordsByCategory,
-    getPositivity = queries.getPositivity,
-  }
-) => {
+  getUserRecordsByCategory = queries.getUserRecordsByCategory,
+  getPositivity = queries.getPositivity,
+}) => {
   try {
     const data = await getUserRecordsByCategory({
       uid: req.uid,
@@ -49,15 +53,13 @@ exports.getAggregate = async (
  * aggregate all data with given categoryId by value
  * @return {{title: string, seriesData: [{ xlabel: string, ylabel: string, xunit: string, yunit: string, xmin: Date, xmax: Date, ymin: number, ymax: number, data: [{x: Date, y: number}]}]}}
  */
-exports.getDailyTotal = async (
+exports.getDailyTotal = async ({
   args,
   req,
   yTransformation,
-  {
-    getUserRecordsByCategoryDayTotal = queries.getUserRecordsByCategoryDayTotal,
-    getCategoryById = queries.getCategoryById,
-  }
-) => {
+  getUserRecordsByCategoryDayTotal = queries.getUserRecordsByCategoryDayTotal,
+  getCategoryById = queries.getCategoryById,
+}) => {
   try {
     const data = await getUserRecordsByCategoryDayTotal({
       uid: req.uid,
