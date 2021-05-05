@@ -92,7 +92,7 @@ describe("chartUtils", () => {
     });
   });
 
-  describe.only("getContributionCounts()", () => {
+  describe("getContributionCounts()", () => {
     const targetData = [
       { optionId: 5, value: 1, date: new Date("01/05/2015") },
       { optionId: 5, value: 1, date: new Date("01/08/2015") },
@@ -148,6 +148,19 @@ describe("chartUtils", () => {
       });
       const correctCounts = { opt1: 1 };
       assert.deepStrictEqual(result.counts, correctCounts);
+    });
+  });
+
+  describe.only("getSortedPercentageCounts()", () => {
+    it(`should return correct percentage counts`, () => {
+      const counts = { opt1: 4, opt2: 5, opt3: 1 };
+      const correctResults = [
+        { x: "opt2", y: 50 },
+        { x: "opt1", y: 40 },
+        { x: "opt3", y: 10 },
+      ];
+      const results = utils.getSortedPercentageCounts({ counts });
+      assert.deepStrictEqual(results, correctResults);
     });
   });
 });

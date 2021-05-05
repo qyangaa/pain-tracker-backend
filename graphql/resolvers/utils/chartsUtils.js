@@ -115,6 +115,12 @@ const getContributionCounts = ({ targetData, categoryData, extension }) => {
   return { counts };
 };
 
+/**
+ * get contribution of category (within given extension days today inclusive ahead of time) to target option
+ * targetData must have same optionIds
+ * @param {{optionName: number}}
+ * @return {[{x: number, y: number}]}
+ */
 const getSortedPercentageCounts = ({ counts }) => {
   if (Object.keys(counts).length !== 0) {
     let sum = Object.values(counts).reduce((total, d) => total + d);
@@ -123,8 +129,8 @@ const getSortedPercentageCounts = ({ counts }) => {
       y: Math.round((e[1] / sum) * 100),
     }));
     results.sort((d1, d2) => -d1.y + d2.y);
+    return results;
   } else return [];
-  return results;
 };
 
 module.exports = {
