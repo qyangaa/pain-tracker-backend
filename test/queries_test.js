@@ -18,7 +18,7 @@ const {
 } = require("../postgres/queries");
 const assert = require("assert");
 
-describe.only("queries.js", () => {
+describe("queries.js", () => {
   describe("getUid()", () => {
     it("should return integer uid", async () => {
       const authId = "dummyAuthId";

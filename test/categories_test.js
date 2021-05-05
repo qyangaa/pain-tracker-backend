@@ -19,6 +19,7 @@ const option_test = {
   categoryId: 1,
   title: "less pain",
   defaultValue: 30,
+  unit: null,
   iconName,
 };
 
@@ -37,6 +38,7 @@ const options = [
     categoryId: 1,
     title: "less pain",
     defaultValue: 30,
+    unit: null,
     iconName,
   },
   {
@@ -44,6 +46,7 @@ const options = [
     categoryId: 2,
     title: "option2",
     defaultValue: 30,
+    unit: "minutes",
     iconName: iconName2,
   },
 ];
@@ -57,6 +60,7 @@ const options_output_test = [
     value: options[0].defaultValue,
     src,
     srcActive,
+    unit: null,
     iconName,
   },
   {
@@ -67,6 +71,7 @@ const options_output_test = [
     src: src2,
     srcActive: srcActive2,
     value: values[1],
+    unit: "minutes",
     iconName: iconName2,
   },
 ];

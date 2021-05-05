@@ -15,6 +15,7 @@ const option_test = {
   categoryId: 1,
   title: "less pain",
   defaultValue: 30,
+  unit: null,
   iconName,
 };
 
@@ -25,10 +26,11 @@ const option_output_test = {
   value: 30,
   src,
   srcActive,
+  unit: null,
   iconName,
 };
 
-describe("optionUtils.js", () => {
+describe.only("optionUtils.js", () => {
   describe("getIconUrl()", () => {
     it("should return correct src and srcActive", () => {
       const result = utils.getIconUrl({ name: iconName });
@@ -79,6 +81,7 @@ describe("optionUtils.js", () => {
       categoryId: 1,
       title: "less pain",
       defaultValue: 30,
+      unit: null,
       iconName,
     },
     {
@@ -86,6 +89,7 @@ describe("optionUtils.js", () => {
       categoryId: 2,
       title: "option2",
       defaultValue: 30,
+      unit: "minutes",
       iconName: iconName2,
     },
   ];
@@ -99,6 +103,7 @@ describe("optionUtils.js", () => {
       value: options[0].defaultValue,
       src,
       srcActive,
+      unit: null,
       iconName,
     },
     {
@@ -109,6 +114,7 @@ describe("optionUtils.js", () => {
       src: src2,
       srcActive: srcActive2,
       value: values[1],
+      unit: "minutes",
       iconName: iconName2,
     },
   ];
@@ -133,7 +139,6 @@ describe("optionUtils.js", () => {
         options: JSON.parse(JSON.stringify(options)),
         propertiesMap: { ...propertiesMap_output },
       });
-      console.log(result);
       assert.deepStrictEqual(result.category2options, category2options_output);
     });
   });
