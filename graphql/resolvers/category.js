@@ -1,10 +1,3 @@
-const {
-  getLastUsed,
-  categoriesLoader,
-  optionsLoader,
-  searchOptionQuery,
-} = require("../../postgres/queries");
-
 const utils = require("./utils/optionUtils");
 
 const queries = require("../../postgres/queries");
@@ -16,10 +9,8 @@ const queries = require("../../postgres/queries");
 exports.searchOption = async (
   args = { text: "" },
   req,
-  {
-    searchOptionQuery = queries.searchOptionQuery,
-    transformOptionOutput = utils.transformOptionOutput,
-  }
+  searchOptionQuery = queries.searchOptionQuery,
+  transformOptionOutput = utils.transformOptionOutput
 ) => {
   const options = await searchOptionQuery({
     text: args.text,
@@ -39,11 +30,9 @@ exports.searchOption = async (
 exports.lastUsed = async (
   args,
   req = { uid: 1 },
-  {
-    getLastUsed = queries.getLastUsed,
-    optionsLoader = queries.optionsLoader,
-    categoriesLoader = queries.categoriesLoader,
-  }
+  getLastUsed = queries.getLastUsed,
+  optionsLoader = queries.optionsLoader,
+  categoriesLoader = queries.categoriesLoader
 ) => {
   try {
     // get last used options: lastUsed: [{option: selected}]

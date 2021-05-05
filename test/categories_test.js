@@ -91,6 +91,7 @@ const categoriesLoader = () => {
 
 const searchOptionQuery = async ({ text, categoryId }) => {
   if (text != "less pain") return [];
+  if (!categoryId) throw new Error("missing argument 'categoryId'");
   return [options_output_test[0]];
 };
 
@@ -101,12 +102,18 @@ describe("category.js", () => {
   const req = { uid: 1 };
   describe("searchOption()", () => {
     it("should return correct options", async () => {
-      args = { text: "less pain" };
-      const result = await searchOption(args, req, {
+      args = { text: "less pain", categoryId: 1 };
+      const result = await searchOption(
+        args,
+        req,
         searchOptionQuery,
-        transformOptionOutput,
-      });
+        transformOptionOutput
+      );
       assert.deepStrictEqual(result, [options_output_test[0]]);
+    });
+    it("should work without injection", async () => {
+      args = { text: "less pain", categoryId: 1 };
+      const result = await searchOption(args, req);
     });
   });
 
@@ -117,12 +124,17 @@ describe("category.js", () => {
 
   describe("lastUsed()", () => {
     it("should return correct categories with options list", async () => {
-      const result = await lastUsed(args, req, {
+      const result = await lastUsed(
+        args,
+        req,
         getLastUsed,
         optionsLoader,
-        categoriesLoader,
-      });
+        categoriesLoader
+      );
       assert.deepStrictEqual(result, categories_output);
+    });
+    it("should work without injection", async () => {
+      const result = await lastUsed(args, req);
     });
   });
 });
