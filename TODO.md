@@ -1,5 +1,4 @@
-## refactor
+## refactor & tests
 
-- category
 - lineCharts
 - records
