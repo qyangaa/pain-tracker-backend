@@ -179,12 +179,15 @@ describe("queries.js", () => {
     });
 
     describe("getUserRecordsByCategoryDayTotal()", () => {
-      it("should return record with correct sum of value", async () => {
-        const result = await getUserRecordsByCategoryDayTotal({
+      let result;
+      beforeEach(async () => {
+        result = await getUserRecordsByCategoryDayTotal({
           uid,
           categoryId,
           numMonths,
         });
+      });
+      it("should return record with correct sum of value", async () => {
         let sum = 0;
         records.forEach((d) => {
           if (d.categoryId == categoryId) sum += d.value;
