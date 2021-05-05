@@ -91,4 +91,63 @@ describe("chartUtils", () => {
       assert.strictEqual(result, "1 month");
     });
   });
+
+  describe.only("getContributionCounts()", () => {
+    const targetData = [
+      { optionId: 5, value: 1, date: new Date("01/05/2015") },
+      { optionId: 5, value: 1, date: new Date("01/08/2015") },
+    ];
+    const categoryData = [
+      {
+        date: new Date("01/01/2015"),
+        optionIds: [1, 2, 3],
+        optionNames: ["opt1", "opt2", "opt3"],
+      },
+      {
+        date: new Date("01/03/2015"),
+        optionIds: [1, 2],
+        optionNames: ["opt1", "opt2"],
+      },
+      {
+        date: new Date("01/05/2015"),
+        optionIds: [1],
+        optionNames: ["opt1"],
+      },
+      {
+        date: new Date("01/07/2015"),
+        optionIds: [2],
+        optionNames: ["opt2"],
+      },
+    ];
+    it(`should return correct counts: extension = 5`, () => {
+      const extension = 5;
+      const result = utils.getContributionCounts({
+        targetData,
+        categoryData,
+        extension,
+      });
+      const correctCounts = { opt1: 3, opt2: 3, opt3: 1 };
+      assert.deepStrictEqual(result.counts, correctCounts);
+    });
+    it(`should return correct counts with skipped days: extension = 3`, () => {
+      const extension = 3;
+      const result = utils.getContributionCounts({
+        targetData,
+        categoryData,
+        extension,
+      });
+      const correctCounts = { opt1: 2, opt2: 2 };
+      assert.deepStrictEqual(result.counts, correctCounts);
+    });
+    it(`should return correct counts with only days of target: extension = 1`, () => {
+      const extension = 1;
+      const result = utils.getContributionCounts({
+        targetData,
+        categoryData,
+        extension,
+      });
+      const correctCounts = { opt1: 1 };
+      assert.deepStrictEqual(result.counts, correctCounts);
+    });
+  });
 });

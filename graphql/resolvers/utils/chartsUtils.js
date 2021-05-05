@@ -83,18 +83,20 @@ const getMonth = ({ numMonths = 1 }) => {
 };
 
 /**
- * get contribution of category (within given extension ahead of time) to target
- * @param {{targetData: [{optionId: number, value: number, date: Date}], categoryData: [{date: Date, optionIds: [number], optionNames: [string]}], extension: number}}
+ * get contribution of category (within given extension days today inclusive ahead of time) to target option
+ * targetData must have same optionIds
+ *  @param {{targetData: [{optionId: number, value: number, date: Date}], categoryData: [{date: Date, optionIds: [number], optionNames: [string]}], extension: number}}
  * @return {{optionName: number}}
  */
 const getContributionCounts = ({ targetData, categoryData, extension }) => {
   const counts = {};
   let start = 0;
+  const extensionMilliseconds = 24 * 60 * 60 * 1000 * extension;
   targetData.forEach((target) => {
     while (
       //skip all data father than extension ahead of target
       categoryData[start] &&
-      categoryData[start].date <= target.date - extension
+      categoryData[start].date <= target.date - extensionMilliseconds
     )
       start++;
     for (
@@ -103,10 +105,11 @@ const getContributionCounts = ({ targetData, categoryData, extension }) => {
       categoryData[i] && categoryData[i].date <= target.date;
       i++
     ) {
-      for (let optionName of categoryData[i].optionName) {
+      for (let optionName of categoryData[i].optionNames) {
         if (!counts[optionName]) counts[optionName] = 0;
         counts[optionName]++;
       }
+      start++;
     }
   });
   return { counts };

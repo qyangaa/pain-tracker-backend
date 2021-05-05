@@ -5,7 +5,7 @@ const lineCharts = require("./injections/lineCharts");
 describe("charts.js", () => {
   const req = { uid: 1 };
   const args = { numMonths: 1 };
-  describe.only("getLineChart()", () => {
+  describe("getLineChart()", () => {
     it("should work with PAIN_LEVEL", async () => {
       args.type = lineCharts.lineTypes.PAIN_LEVEL;
       const result = await charts.getLineChart(args, req, lineCharts);
@@ -26,7 +26,7 @@ describe("charts.js", () => {
       const result = await charts.getLineChart(args, req);
     });
   });
-  describe.only("getLineChartSelections", () => {
+  describe("getLineChartSelections", () => {
     it("should return correct selections", () => {
       const result = charts.getLineChartSelections(lineCharts.lineTypes);
       assert.deepStrictEqual(result, lineCharts.lineTypes_output);
