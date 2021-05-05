@@ -1,10 +1,3 @@
-const {
-  getUserRecordsCategory,
-  getUserRecordsByCategoryDayTotal,
-  getCategoryById,
-  getPositivity,
-} = require("../../../postgres/queries");
-
 const queries = require("../../../postgres/queries");
 
 const utils = require("../utils/chartsUtils");
@@ -25,7 +18,7 @@ exports.getAggregate = async (
     const data = await getUserRecordsByCategory({
       uid: req.uid,
       categoryId: args.categoryId,
-      numMonths: args.numMonths + " month",
+      numMonths: utils.getMonth(args.numMonths),
     });
     const { positives, negatives } = await getPositivity({
       categoryId: args.categoryId,
@@ -69,7 +62,7 @@ exports.getDailyTotal = async (
     const data = await getUserRecordsByCategoryDayTotal({
       uid: req.uid,
       categoryId: args.categoryId,
-      numMonths: args.numMonths + " month",
+      numMonths: utils.getMonth(args.numMonths),
     });
 
     const categoryInfo = await getCategoryById({ categoryId: args.categoryId });

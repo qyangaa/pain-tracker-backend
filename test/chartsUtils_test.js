@@ -84,4 +84,11 @@ describe("chartUtils", () => {
       assert.deepStrictEqual(result.range, range);
     });
   });
+
+  describe("getMonth()", () => {
+    it("should return '1 month", () => {
+      const result = utils.getMonth(1);
+      assert.strictEqual(result, "1 month");
+    });
+  });
 });

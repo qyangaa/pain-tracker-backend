@@ -73,4 +73,6 @@ const yTransformData = ({ data, yTransformation = (d) => d }) => {
   return { range: range.get(), results };
 };
 
-module.exports = { DataRange, aggregateData, yTransformData };
+const getMonth = ({ numMonths = 1 }) => numMonths + " month";
+
+module.exports = { DataRange, aggregateData, yTransformData, getMonth };
