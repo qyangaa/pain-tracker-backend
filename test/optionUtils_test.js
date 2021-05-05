@@ -30,7 +30,7 @@ const option_output_test = {
   iconName,
 };
 
-describe.only("optionUtils.js", () => {
+describe("optionUtils.js", () => {
   describe("getIconUrl()", () => {
     it("should return correct src and srcActive", () => {
       const result = utils.getIconUrl({ name: iconName });

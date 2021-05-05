@@ -9,6 +9,7 @@ const {
   deleteUserRecords,
   searchOptionQuery,
   getUserRecordsByOptions,
+  getUserRecordsByCategory,
   getUserRecordsByCategoryDayTotal,
   getUserRecordsByCategoryDayOptions,
   getCategoryById,
@@ -156,6 +157,19 @@ describe("queries.js", () => {
         const result = await getUserRecordsByOptions({
           uid,
           optionIds,
+          numMonths,
+        });
+        assert.deepStrictEqual(result[0].optionId, records[optionIdx]._id);
+        assert.deepStrictEqual(result[0].value, records[optionIdx].value);
+        assert.deepStrictEqual(result[0].date, date);
+      });
+    });
+
+    describe("getUserRecordsByCategory()", () => {
+      it("should return correct records", async () => {
+        const result = await getUserRecordsByCategory({
+          uid,
+          categoryId: 1,
           numMonths,
         });
         assert.deepStrictEqual(result[0].optionId, records[optionIdx]._id);

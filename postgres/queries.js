@@ -310,6 +310,36 @@ exports.getUserRecordsByOptions = async ({
 };
 
 /**
+ * get records of user given categoryId and within numMonths from today
+ * @param {{uid: number, categoryId: number, numMonths: String}}
+ * @return {[{optionId: number, value: number, date: Date}]}
+ */
+exports.getUserRecordsByCategory = async ({
+  uid,
+  categoryId,
+  numMonths = "1 month",
+}) => {
+  try {
+    const results = await db.any(
+      `
+      SELECT option_id as "optionId",
+      value,
+      date
+      FROM records
+      WHERE user_id = $1
+      AND category_id = $2
+      AND date >=CURRENT_DATE - INTERVAL $3
+      ORDER BY date ASC;
+      ;`,
+      [uid, categoryId, numMonths]
+    );
+    return results;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
  * Return accumulated value of records in given category within numMonths from today
  * @param {{uid: number, optionIds: [number], numMonths: String}}
  * @return {[{value: number, date: Date}]}
