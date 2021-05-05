@@ -1,15 +1,20 @@
 class DataRange {
-  constructor() {
+  constructor(xDate = false) {
     this.xmin = Number.MAX_VALUE;
     this.xmax = Number.MIN_VALUE;
     this.ymin = Number.MAX_VALUE;
     this.ymax = Number.MIN_VALUE;
+    this.xDate = xDate;
   }
   update({ x, y }) {
     this.xmin = Math.min(this.xmin, x);
     this.xmax = Math.max(this.xmax, x);
     this.ymin = Math.min(this.ymin, y);
     this.ymax = Math.max(this.ymax, y);
+    if (this.xDate) {
+      this.xmin = new Date(this.xmin);
+      this.xmax = new Date(this.xmax);
+    }
   }
   get() {
     return {
@@ -29,7 +34,7 @@ class DataRange {
 const aggregateData = ({ data, positives, negatives }) => {
   let level = 0;
   const results = [];
-  const range = new DataRange();
+  const range = new DataRange(true);
   data.forEach((item) => {
     if (negatives.has(item.optionId)) level--;
     else if (positives.has(item.optionId)) level++;
@@ -45,16 +50,27 @@ const aggregateData = ({ data, positives, negatives }) => {
     range.update({ x, y });
     results.push({ x, y });
   });
-  const rangeResult = range.get();
   return {
-    range: {
-      xmin: new Date(rangeResult.xmin),
-      xmax: new Date(rangeResult.xmax),
-      ymin: rangeResult.ymin,
-      ymax: rangeResult.ymax,
-    },
+    range: range.get(),
     results,
   };
 };
 
-module.exports = { DataRange: DataRange, aggregateData: aggregateData };
+/**
+ * transform all y values in a line data set
+ * @param {{data: [{value: number, date: Date}]}}
+ * @return {{range: {xmin: Date, xmax: Date, ymin: number, ymax: number}, results: [{x: Date, y: number}]}}
+ */
+const yTransformData = ({ data, yTransformation = (d) => d }) => {
+  const results = [];
+  const range = new DataRange(true);
+  data.forEach((item) => {
+    let x = item.date;
+    let y = yTransformation(item.value);
+    range.update({ x, y });
+    results.push({ x, y });
+  });
+  return { range: range.get(), results };
+};
+
+module.exports = { DataRange, aggregateData, yTransformData };

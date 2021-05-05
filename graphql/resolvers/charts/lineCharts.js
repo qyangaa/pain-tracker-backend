@@ -50,7 +50,7 @@ exports.getAggregate = async (
   }
 };
 
-exports.getDailyTotal = async (args, req, yTransformation = (d) => d) => {
+exports.getDailyTotal = async (args, req, yTransformation) => {
   try {
     const data = await getUserRecordsByCategoryDayTotal(
       req.uid,
@@ -61,14 +61,7 @@ exports.getDailyTotal = async (args, req, yTransformation = (d) => d) => {
 
     const categoryInfo = await getCategoryById(args.categoryId);
     // console.log(categoryInfo);
-    const results = [];
-    const range = new DataRange();
-    data.forEach((item) => {
-      let x = item.date;
-      let y = yTransformation(item[args.type]);
-      range.update({ x, y });
-      results.push({ x, y });
-    });
+    const { range, results } = utils.yTransformData({ data, yTransformation });
     const series = {
       xlabel: "date",
       ylabel: categoryInfo.name + " " + args.type,

@@ -26,7 +26,7 @@ const getPositivity = (categoryId) => {
   return { positives, negatives };
 };
 
-describe.only("lineCharts.js", () => {
+describe("lineCharts.js", () => {
   const req = { uid: 1 };
   let result;
   describe("getAggregate()", () => {

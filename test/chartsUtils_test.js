@@ -52,4 +52,36 @@ describe("chartUtils", () => {
       assert.deepStrictEqual(result.results, results);
     });
   });
+
+  describe("yTransformData()", () => {
+    let result;
+    const data = [
+      { value: 1, date: new Date("01/01/2015") },
+      { value: 2, date: new Date("01/03/2015") },
+      { value: 2, date: new Date("01/05/2015") },
+    ];
+    const results = [
+      { x: new Date("01/01/2015"), y: 1 + 1 },
+      { x: new Date("01/03/2015"), y: 2 + 1 },
+      { x: new Date("01/05/2015"), y: 2 + 1 },
+    ];
+    const range = {
+      xmin: new Date("01/01/2015"),
+      xmax: new Date("01/05/2015"),
+      ymin: 1 + 1,
+      ymax: 2 + 1,
+    };
+    beforeEach(async () => {
+      result = await utils.yTransformData({
+        data,
+        yTransformation: (d) => d + 1,
+      });
+    });
+    it("should return correct results.", () => {
+      assert.deepStrictEqual(result.results, results);
+    });
+    it("should return correct range.", () => {
+      assert.deepStrictEqual(result.range, range);
+    });
+  });
 });
