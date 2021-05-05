@@ -72,7 +72,8 @@ exports.optionsLoader = async ({ optionIds }) => {
       `SELECT p.option_id AS _id, 
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
-      p.default_value as "defaultValue", 
+      p.default_value as "defaultValue",
+      unit, 
       p.icon_name as "iconName"
       FROM options p 
       WHERE p.option_id = ANY($1::int[])
@@ -245,6 +246,7 @@ exports.searchOptionQuery = async ({ text, categoryId }) => {
       p.category_id AS "categoryId", 
       TRIM (p.title) AS title, 
       p.default_value as "defaultValue", 
+      p.unit as unit,
       p.icon_name AS "iconName"
       FROM options p 
         WHERE p.category_id = $1 AND vector_field @@ to_tsquery($2)
@@ -349,7 +351,10 @@ exports.getUserRecordsByCategoryDayOptions = async ({
   try {
     const results = await db.any(
       `
-      SELECT date, array_agg(records.option_id) as "optionIds", array_agg(title) as "optionNames"
+      SELECT date, 
+      array_agg(records.option_id) as "optionIds", 
+      array_agg(title) as "optionNames",
+      array_agg(unit) as "units"
       FROM records LEFT JOIN options ON(records.option_id = options.option_id)
       WHERE user_id = $1
       AND records.category_id = $2
@@ -389,7 +394,9 @@ exports.getContributorCategories = async () => {
 exports.getContributeeOptions = async () => {
   try {
     const results = await db.query(
-      `SELECT option_id AS "_id", options.title AS "name"
+      `SELECT option_id AS "_id", 
+      options.title AS "name",
+      unit
       FROM options 
       WHERE is_contributee`,
       []

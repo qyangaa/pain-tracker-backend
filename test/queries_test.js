@@ -18,7 +18,7 @@ const {
 } = require("../postgres/queries");
 const assert = require("assert");
 
-describe("queries.js", () => {
+describe.only("queries.js", () => {
   describe("getUid()", () => {
     it("should return integer uid", async () => {
       const authId = "dummyAuthId";
@@ -60,6 +60,7 @@ describe("queries.js", () => {
           categoryId: 1,
           title: "less pain",
           defaultValue: null,
+          unit: null,
           iconName: "heart",
         },
       ]);
@@ -120,6 +121,7 @@ describe("queries.js", () => {
     const categoryIdx = 1;
     const categoryId = records[categoryIdx].categoryId;
     const option_names = ["weight", "swimming"]; //names of options with categoryId
+    const option_units = ["minutes", "minutes"];
     const numMonths = "1 month";
 
     describe("deleteUserRecords()", () => {
@@ -190,6 +192,7 @@ describe("queries.js", () => {
         });
         assert.deepStrictEqual(result[0].optionIds, option_ids);
         assert.deepStrictEqual(result[0].optionNames, option_names);
+        assert.deepStrictEqual(result[0].units, option_units);
       });
     });
   });
@@ -209,8 +212,11 @@ describe("queries.js", () => {
     });
 
     describe("getContributeeOptions()", () => {
-      it("option 16, 17, 19 should all be in results", async () => {
-        const result = await getContributeeOptions();
+      let result;
+      beforeEach(async () => {
+        result = await getContributeeOptions();
+      });
+      it("option 16, 17, 19 should all be in results", () => {
         const found = new Set();
         result.forEach((d) => {
           found.add(d._id);
@@ -218,6 +224,12 @@ describe("queries.js", () => {
         assert(found.has(16));
         assert(found.has(17));
         assert(found.has(19));
+      });
+      it("unit should be defined", () => {
+        assert(result[0].unit !== undefined);
+      });
+      it("name should be defined", () => {
+        assert(result[0].name !== undefined);
       });
     });
 
@@ -241,6 +253,7 @@ describe("queries.js", () => {
         categoryId: 2,
         title: "happy",
         defaultValue: 0,
+        unit: null,
         iconName: "happy",
       };
       assert.deepStrictEqual(result[0], expectedOption);
