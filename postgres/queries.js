@@ -234,7 +234,7 @@ exports.updateLastUsed = async ({ uid, lastUsed }) => {
 /**
  * prefix search in options table
  * @param {{text: String, categoryId: Number}}
- * @return {{Id: number, categoryId: Number, title: string, iconName: string}}
+ * @return {{_id: number, categoryId: Number, title: string, defaultValue: Number, iconName: string}}
  */
 exports.searchOptionQuery = async ({ text, categoryId }) => {
   const tsquery = text.trim().split(" ").join("|");

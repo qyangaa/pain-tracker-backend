@@ -5,97 +5,67 @@ const {
   searchOptionQuery,
 } = require("../../postgres/queries");
 
-const getIconUrl = (name, platform = "reactNative") => {
-  if (!name) {
-    return {
-      src: "https://via.placeholder.com/150",
-      srcActive: "https://via.placeholder.com/150",
-    };
+const utils = require("./utils/optionUtils");
+
+const queries = require("../../postgres/queries");
+
+/**
+ * search option by full word input
+ * @return {[{_id: number, categoryId: number, title: string, value: number, src: string, srcActive: string, iconName: string}]}
+ */
+exports.searchOption = async (
+  args = { text: "" },
+  req,
+  {
+    searchOptionQuery = queries.searchOptionQuery,
+    transformOptionOutput = utils.transformOptionOutput,
   }
-  let suffix;
-  if (platform === "reactNative") suffix = "hdpi";
-  const src = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}%2F${name}_outline_${suffix}.png?alt=media`;
-  const srcActive = `https://firebasestorage.googleapis.com/v0/b/pain-tracker-934d3.appspot.com/o/assets%2Ficons%2F${name}%2F${name}_solid_${suffix}.png?alt=media`;
-  return { src, srcActive };
+) => {
+  const options = await searchOptionQuery({
+    text: args.text,
+    categoryId: args.categoryId,
+  });
+  options.forEach((option) => {
+    transformOptionOutput({ option });
+    option.selected = true;
+  });
+  return options;
 };
 
-exports.option = async (args, req) => {
-  const option = await optionsLoader.load(args.id);
-  return option;
-};
-
-exports.lastUsed = async (args, req) => {
+/**
+ * get last used options grouped by category
+ * @return {[{_id: number;name: string;title: string; options: {_id: number, categoryId: number, title: string, value: number, src: string, srcActive: string, iconName: string}}]}
+ */
+exports.lastUsed = async (
+  args,
+  req = { uid: 1 },
+  {
+    getLastUsed = queries.getLastUsed,
+    optionsLoader = queries.optionsLoader,
+    categoriesLoader = queries.categoriesLoader,
+  }
+) => {
   try {
     // get last used options: lastUsed: [{option: selected}]
-    const {
-      options: optionIds,
+    const { options: optionIds, selected, value: values } = await getLastUsed(
+      req.uid
+    );
+    const propertiesMap = utils.getOptionsPropertiesMap({
+      optionIds,
       selected,
-      duration,
-      amount,
-    } = await getLastUsed(req.uid);
-    // if (!optionIds) optionIds = suggested;
-    const propertiesMap = {};
-    for (let i = 0; i < optionIds.length; i++) {
-      if (!propertiesMap[optionIds[i]])
-        propertiesMap[optionIds[i]] = { _id: optionIds[i] };
-      propertiesMap[optionIds[i]].selected = selected[i];
-      if (duration) {
-        propertiesMap[optionIds[i]].duration = duration[i];
-      } else {
-        propertiesMap[optionIds[i]].duration = 30;
-      }
+      values,
+    });
+    const options = await optionsLoader({ optionIds });
 
-      if (amount) {
-        propertiesMap[optionIds[i]].amount = amount[i];
-      } else {
-        propertiesMap[optionIds[i]].amount = 1;
-      }
-    }
-    const options = await optionsLoader.loadMany(optionIds);
-    // Find categories appeared
-    const categoryIds = new Set();
-    const category2options = {};
-    options.map(async (option) => {
-      const categoryId = option.categoryId;
-      categoryIds.add(categoryId);
-      // Get Url
-      const { src, srcActive } = getIconUrl(option.iconName, "reactNative");
-      option.src = src;
-      option.srcActive = srcActive;
-      if (!category2options[categoryId])
-        // Fill with last used selections
-        category2options[categoryId] = [];
-      option.selected = propertiesMap[option._id].selected;
-      option.amount = propertiesMap[option._id].amount;
-      option.duration = propertiesMap[option._id].duration;
-      category2options[categoryId].push(option);
+    const { category2options, categoryIds } = utils.getCategory2OptionsMap({
+      options,
+      propertiesMap,
     });
     // Organize optios by categories
-    const categories = await categoriesLoader.loadMany(Array.from(categoryIds));
-    categories.forEach((category) => {
-      category.options = category2options[category._id.toString()];
-
-      if (category.hasDuration) {
-        category.options.forEach((option) => {
-          option.duration = 30;
-        });
-      }
-    });
+    const categories = await categoriesLoader(Array.from(categoryIds));
+    utils.addOptions2Categories({ categories, category2options });
     return categories;
   } catch (error) {
     return error;
   }
-};
-
-exports.searchOption = async (args, req) => {
-  const options = await searchOptionQuery(args.text.trim(), args.categoryId);
-  options.forEach((option) => {
-    const { src, srcActive } = getIconUrl(option.iconName, "reactNative");
-    option.src = src;
-    option.srcActive = srcActive;
-    option.selected = true;
-    option.duration = 30;
-    option.amount = 0;
-  });
-  return options;
 };
