@@ -86,7 +86,7 @@ type RootQuery {
     getRecords(numMonths: String): Boolean
     getLineChart(numMonths: String!, type: String!, arg: String): LineChart!
     getLineChartSelections: [LineChartOption!]!
-    getContribution(categoryId: String!, categoryName: String!, optionId: String!, optionName: String!, numMonths: String!, extension: String!): LineChart!
+    getPieChart(categoryId: String!, categoryName: String!, optionId: String!, optionName: String!, numMonths: String!, extension: String!): LineChart!
     getPieChartSelections: PieChartSelections!
 }
 

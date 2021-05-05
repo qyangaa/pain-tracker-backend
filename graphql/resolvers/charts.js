@@ -1,6 +1,7 @@
 const queries = require("../../postgres/queries");
 
 const lineCharts = require("./charts/lineCharts");
+const pieCharts = require("./charts/pieCharts");
 
 /**
  * get line chart of category and chart type specified
@@ -48,60 +49,10 @@ exports.getLineChartSelections = (lineTypes = lineCharts.lineTypes) => {
   }));
 };
 
-exports.getContribution = async (
-  args,
-  req,
-  getUserRecordsByOptions = queries.getUserRecordsByOptions,
-  getUserRecordsByCategoryDayOptions = queries.getUserRecordsByCategoryDayOptions
-) => {
+exports.getPieChart = async (args, req, pies = pieCharts) => {
   try {
-    const targetData = await getUserRecordsByOptions(
-      req.uid,
-      [args.optionId],
-      args.numMonths + " month"
-    );
-    const categoryData = await getUserRecordsByCategoryDayOptions(
-      req.uid,
-      args.categoryId,
-      args.numMonths + " month"
-    );
-    // console.log(targetData[0], categoryData[0]);
-    const hashMap = {};
-    let start = 0;
-    targetData.forEach((item) => {
-      while (
-        categoryData[start] &&
-        categoryData[start].date <= item.date - parseInt(args.extension)
-      )
-        start++;
-      for (
-        let i = start;
-        categoryData[i] && categoryData[i].date <= item.date;
-        i++
-      ) {
-        for (let optionName of categoryData[i].optionName) {
-          if (!hashMap[optionName]) hashMap[optionName] = 0;
-          hashMap[optionName]++;
-        }
-      }
-    });
-    const series = { xlabel: "item", ylabel: "count", data: [] };
-    // console.log(hashMap);
-
-    if (Object.keys(hashMap).length !== 0) {
-      let sum = Object.values(hashMap).reduce((total, d) => total + d);
-      const results = Object.entries(hashMap).map((e) => ({
-        x: e[0],
-        y: Math.round((e[1] / sum) * 100),
-      }));
-      results.sort((d1, d2) => -d1.y + d2.y);
-      // console.log(results);
-      series.data = results.slice(0, 10);
-    }
-    return {
-      title: `Contribution of ${args.categoryName} on ${args.optionName}`,
-      seriesData: [series],
-    };
+    const result = await pies.getContribution(args, req);
+    return result;
   } catch (error) {
     throw error;
   }

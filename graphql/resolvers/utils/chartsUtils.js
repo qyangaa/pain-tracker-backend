@@ -73,6 +73,62 @@ const yTransformData = ({ data, yTransformation = (d) => d }) => {
   return { range: range.get(), results };
 };
 
-const getMonth = ({ numMonths = 1 }) => numMonths + " month";
+/**
+ * transform numMonths in a line data set
+ */
+const getMonth = ({ numMonths = 1 }) => {
+  if (typeof numMonths !== "number")
+    throw new Error("input numMonths is not a number");
+  return numMonths + " month";
+};
 
-module.exports = { DataRange, aggregateData, yTransformData, getMonth };
+/**
+ * get contribution of category (within given extension ahead of time) to target
+ * @param {{targetData: [{optionId: number, value: number, date: Date}], categoryData: [{date: Date, optionIds: [number], optionNames: [string]}], extension: number}}
+ * @return {{optionName: number}}
+ */
+const getContributionCounts = ({ targetData, categoryData, extension }) => {
+  const counts = {};
+  let start = 0;
+  targetData.forEach((target) => {
+    while (
+      //skip all data father than extension ahead of target
+      categoryData[start] &&
+      categoryData[start].date <= target.date - extension
+    )
+      start++;
+    for (
+      // for all data up to date of target
+      let i = start;
+      categoryData[i] && categoryData[i].date <= target.date;
+      i++
+    ) {
+      for (let optionName of categoryData[i].optionName) {
+        if (!counts[optionName]) counts[optionName] = 0;
+        counts[optionName]++;
+      }
+    }
+  });
+  return { counts };
+};
+
+const getSortedPercentageCounts = ({ counts }) => {
+  if (Object.keys(counts).length !== 0) {
+    let sum = Object.values(counts).reduce((total, d) => total + d);
+    const results = Object.entries(counts).map((e) => ({
+      x: e[0],
+      y: Math.round((e[1] / sum) * 100),
+    }));
+    results.sort((d1, d2) => -d1.y + d2.y);
+  } else return [];
+  return results;
+};
+
+module.exports = {
+  DataRange,
+  aggregateData,
+  yTransformData,
+  getMonth,
+  getContributionCounts,
+  getSortedPercentageCounts,
+};
