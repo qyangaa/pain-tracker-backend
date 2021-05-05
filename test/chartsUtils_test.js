@@ -2,7 +2,7 @@ const utils = require("../graphql/resolvers/utils/chartsUtils");
 
 const assert = require("assert");
 
-describe.only("chartUtils", () => {
+describe("chartUtils", () => {
   describe("DataRange", () => {
     it("should return correct range", () => {
       const range = new utils.DataRange();
@@ -34,18 +34,19 @@ describe.only("chartUtils", () => {
       { x: new Date("01/04/2015"), y: 0 },
       { x: new Date("01/05/2015"), y: 1 },
     ];
+    const range = {
+      xmin: new Date("01/01/2015"),
+      xmax: new Date("01/05/2015"),
+      ymin: -1,
+      ymax: 1,
+    };
     const positives = new Set([1, 3]);
     const negatives = new Set([2, 4]);
     beforeEach(async () => {
       result = await utils.aggregateData({ data, positives, negatives });
     });
     it("should return correct range", () => {
-      assert.deepStrictEqual(result.range, {
-        xmin: new Date("01/01/2015"),
-        xmax: new Date("01/05/2015"),
-        ymin: -1,
-        ymax: 1,
-      });
+      assert.deepStrictEqual(result.range, range);
     });
     it("should return correct results", () => {
       assert.deepStrictEqual(result.results, results);

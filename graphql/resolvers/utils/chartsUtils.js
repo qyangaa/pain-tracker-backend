@@ -24,7 +24,7 @@ class DataRange {
 /**
  * aggregate data by count according to whether they belong to positives or negatives
  * @param {{data: [{optionId: number, value: number, date: Date}], positives: Set<number>, negatives: Set<number>}}
- * @return {{range: {xmin: number, xmax: number, ymin: number}, results: [{x: number, y: number}]}}
+ * @return {{range: {xmin: Date, xmax: Date, ymin: number, ymax: number}, results: [{x: Date, y: number}]}}
  */
 const aggregateData = ({ data, positives, negatives }) => {
   let level = 0;

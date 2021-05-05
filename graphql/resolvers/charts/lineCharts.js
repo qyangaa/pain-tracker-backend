@@ -5,15 +5,28 @@ const {
   getPositivity,
 } = require("../../../postgres/queries");
 
+const queries = require("../../../postgres/queries");
+
 const utils = require("../utils/chartsUtils");
 
-exports.getAggregate = async (args, req) => {
+/**
+ * aggregate data by count according to whether they belong to positives or negatives
+ * @return {{title: string, seriesData: [{ xlabel: string, ylabel: string, xunit: string, yunit: string, xmin: Date, xmax: Date, ymin: number, ymax: number, data: [{x: Date, y: number}]}]}}
+ */
+exports.getAggregate = async (
+  args,
+  req,
+  {
+    getUserRecordsByCategory = queries.getUserRecordsByCategory,
+    getPositivity = queries.getPositivity,
+  }
+) => {
   try {
-    const data = await getUserRecordsCategory(
-      req.uid,
-      args.categoryId,
-      args.numMonths + " month"
-    );
+    const data = await getUserRecordsByCategory({
+      uid: req.uid,
+      categoryId: args.categoryId,
+      numMonths: args.numMonths + " month",
+    });
     const { positives, negatives } = await getPositivity(args.categoryId);
     const { range, results } = utils.aggregateData({
       data,
