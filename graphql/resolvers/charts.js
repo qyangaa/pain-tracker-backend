@@ -1,18 +1,13 @@
-const {
-  getUserRecordsByOptions,
-  getUserRecordsCategoryDayOptions,
-  getContributorCategories,
-  getContributeeOptions,
-} = require("../../postgres/queries");
+const queries = require("../../postgres/queries");
 
 const lineCharts = require("./charts/lineCharts");
 
-exports.getLineChart = async (
-  args,
-  req,
-  { lineTypes = lineCharts.lineTypes }
-) => {
+/**
+ * get line chart of category and chart type specified
+ */
+exports.getLineChart = async (args, req, lines = lineCharts) => {
   try {
+    const lineTypes = lines.lineTypes;
     if (Object.values(lineTypes).indexOf(args.type) === -1)
       throw new Error("Invalid lineType");
     let data;
@@ -21,19 +16,19 @@ exports.getLineChart = async (
       case lineTypes.PAIN_LEVEL:
         args.categoryId = 1;
         args.categoryName = "pain";
-        data = await lineCharts.getAggregate({ args, req });
+        data = await lines.getAggregate({ args, req });
         return data;
       case lineTypes.EXERCISE_DURATION:
         args.categoryId = 3;
         args.categoryName = "exercise";
         args.unit = "hrs";
         yTransformation = (d) => (d / 60).toFixed(1);
-        data = await lineCharts.getDailyTotal({ args, req, yTransformation });
+        data = await lines.getDailyTotal({ args, req, yTransformation });
         return data;
       case lineTypes.MOOD_LEVEL:
         args.categoryId = 2;
         args.categoryName = "mood";
-        data = await lineCharts.getAggregate({ args, req });
+        data = await lines.getAggregate({ args, req });
         return data;
     }
   } catch (error) {
@@ -46,22 +41,26 @@ exports.getLineChart = async (
  * @param {{lineTypes: {key: string}}}
  * @return {[{key: string, name: string}]}
  */
-exports.getLineChartSelections = ({ lineTypes = lineCharts.lineTypes }) => {
-  console.log({ lineTypes });
+exports.getLineChartSelections = (lineTypes = lineCharts.lineTypes) => {
   return Object.entries(lineTypes).map(([key, value]) => ({
     id: key,
     name: value,
   }));
 };
 
-exports.getContribution = async (args, req) => {
+exports.getContribution = async (
+  args,
+  req,
+  getUserRecordsByOptions = queries.getUserRecordsByOptions,
+  getUserRecordsByCategoryDayOptions = queries.getUserRecordsByCategoryDayOptions
+) => {
   try {
     const targetData = await getUserRecordsByOptions(
       req.uid,
       [args.optionId],
       args.numMonths + " month"
     );
-    const categoryData = await getUserRecordsCategoryDayOptions(
+    const categoryData = await getUserRecordsByCategoryDayOptions(
       req.uid,
       args.categoryId,
       args.numMonths + " month"
