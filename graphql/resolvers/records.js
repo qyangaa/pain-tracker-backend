@@ -1,27 +1,32 @@
-const {
-  updateWeather,
-  uploadRecords,
-  updateLastUsed,
-} = require("../../postgres/queries");
+const queries = require("../../postgres/queries");
 
-const utils = require("./utils/recordUtils");
+const recordUtils = require("./utils/recordUtils");
 
 /**
  * Upload record to database
  * @param {{args: {records: [{optionId: number, categoryId: number, selected: boolean, value: number}]} }}
  * @return {{Boolean}}
  */
-exports.createRecords = async (args, req) => {
+exports.createRecords = async (
+  args,
+  req,
+  utils = recordUtils,
+  _queries = queries
+) => {
   try {
     const date = new Date();
     if (args.geoCoordinates) {
-      await updateWeather(args.geoCoordinates, date, req.uid);
+      await _queries.updateWeather({
+        geoCoordinates: args.geoCoordinates,
+        date,
+        uid: req.uid,
+      });
     }
 
     let records = args.records.filter((record) => record.selected);
     const lastUsed = utils.createLastUsedEntry({ records, uid: req.uid });
-    await uploadRecords(req.uid, records);
-    await updateLastUsed(req.uid, lastUsed);
+    await _queries.uploadRecords({ uid: req.uid, records, date });
+    await _queries.updateLastUsed({ uid: req.uid, lastUsed });
   } catch (error) {
     return error;
   }
