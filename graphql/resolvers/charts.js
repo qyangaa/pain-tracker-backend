@@ -64,10 +64,17 @@ exports.getPieChart = async (args, req, pies = pieCharts) => {
   }
 };
 
-exports.getPieChartSelections = async (args, req) => {
+exports.getPieChartSelections = async (
+  args,
+  req,
+  context,
+  _queries = queries
+) => {
   try {
-    const categories = await getContributorCategories();
-    const options = await getContributeeOptions();
+    const categories = await _queries.getContributorCategories({
+      uid: req.uid,
+    });
+    const options = await _queries.getContributeeOptions({ uid: req.uid });
     console.log({ categories, options });
     return { categories, options };
   } catch (error) {
