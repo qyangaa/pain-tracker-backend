@@ -122,7 +122,7 @@ describe("category.js", () => {
     { _id: 2, options: [options_output_test[1]] },
   ];
 
-  describe.only("lastUsed()", () => {
+  describe("lastUsed()", () => {
     it("should return correct categories with options list", async () => {
       const queries = { getLastUsed, optionsLoader, categoriesLoader };
       const result = await lastUsed(args, req, null, queries);

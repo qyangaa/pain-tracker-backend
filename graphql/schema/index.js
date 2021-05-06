@@ -3,15 +3,15 @@ const { buildSchema } = require("graphql");
 module.exports = buildSchema(`
 
 type Category {
-    _id: ID!
+    _id: Int
     name: String!
     title: String!
     options: [Option!]!
 }
 
 type Option {
-    _id: ID!
-    categoryId: ID!
+    _id: Int
+    categoryId: Int
     src: String
     srcActive: String
     title: String!
