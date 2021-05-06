@@ -6,7 +6,6 @@ type Category {
     _id: ID!
     name: String!
     screenType: String!
-    hasDuration: Boolean!
     title: String!
     backgroundImage: String!
     options: [Option!]!
@@ -19,8 +18,8 @@ type Option {
     srcActive: String
     title: String!
     selected: Boolean!
-    duration: Int
-    amount: Int
+    value: Float
+    unit: String
 }
 
 type LineChart {
@@ -60,11 +59,10 @@ type SeriesItem {
 
 
 input recordInput {
-    _id: String!
-    categoryId: String!
+    optionId: Int!
+    categoryId: Int!
     selected: Boolean!
-    duration: Int
-    amount: Int
+    value: Float
     src: String
     srcActive: String
     title: String

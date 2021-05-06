@@ -109,6 +109,7 @@ exports.getLastUsed = async ({ uid }) => {
 
 /**
  * get weather information of given geoCoordinates and date from openweathermap.org and upload to weathers table
+ * @TODO not tested yet
  * @param {{geoCoordinates: { lon: number, lat: number}, date: date, uid: number}}
  * @return boolean
  */
@@ -168,7 +169,7 @@ exports.updateWeather = async ({ geoCoordinates, date, uid }) => {
 
 /**
  * upload records to records table
- * @param {{uid: Number, records: {_id: Number,categoryId: Number,selected: boolean,value: number}, date: Date}}
+ * @param {{uid: Number, records: {optionId: Number,categoryId: Number,selected: boolean,value: number}, date: Date}}
  * @return boolean
  */
 exports.uploadRecords = async ({ uid, records, date }) => {
@@ -178,7 +179,7 @@ exports.uploadRecords = async ({ uid, records, date }) => {
       { table: "records" }
     );
     const values = records.map((record) => ({
-      option_id: record._id,
+      option_id: record.optionId,
       user_id: uid,
       category_id: record.categoryId,
       value: record.value,
@@ -200,7 +201,7 @@ exports.uploadRecords = async ({ uid, records, date }) => {
 exports.getLastUploadedRecords = async ({ uid, count }) => {
   try {
     const results = await db.query(
-      `select option_id as "_id",
+      `select option_id as "optionId",
       category_id as "categoryId",
       value
       from records WHERE user_id = $1  ORDER BY record_id DESC LIMIT $2`,

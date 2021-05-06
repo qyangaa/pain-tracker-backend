@@ -95,20 +95,20 @@ describe("queries.js", () => {
   describe("user records", () => {
     const records = [
       {
-        _id: 16,
+        optionId: 16,
         categoryId: 1,
         selected: true,
         value: null,
       },
 
       {
-        _id: 23,
+        optionId: 23,
         categoryId: 2,
         selected: true,
         value: 30,
       },
       {
-        _id: 25,
+        optionId: 25,
         categoryId: 2,
         selected: true,
         value: 50,
@@ -118,7 +118,7 @@ describe("queries.js", () => {
     const date = new Date("05/03/2021");
     date.setHours(0, 0, 0, 0);
     const optionIdx = 0;
-    const optionIds = [records[optionIdx]._id];
+    const optionIds = [records[optionIdx].optionId];
     const categoryIdx = 1;
     const categoryId = records[categoryIdx].categoryId;
     const option_names = ["weight", "swimming"]; //names of options with categoryId
@@ -159,7 +159,7 @@ describe("queries.js", () => {
           optionIds,
           numMonths,
         });
-        assert.deepStrictEqual(result[0].optionId, records[optionIdx]._id);
+        assert.deepStrictEqual(result[0].optionId, records[optionIdx].optionId);
         assert.deepStrictEqual(result[0].value, records[optionIdx].value);
         assert.deepStrictEqual(result[0].date, date);
       });
@@ -172,7 +172,7 @@ describe("queries.js", () => {
           categoryId: 1,
           numMonths,
         });
-        assert.deepStrictEqual(result[0].optionId, records[optionIdx]._id);
+        assert.deepStrictEqual(result[0].optionId, records[optionIdx].optionId);
         assert.deepStrictEqual(result[0].value, records[optionIdx].value);
         assert.deepStrictEqual(result[0].date, date);
       });
@@ -205,7 +205,7 @@ describe("queries.js", () => {
         });
         const option_ids = [];
         records.forEach((d) => {
-          if (d.categoryId == categoryId) option_ids.push(d._id);
+          if (d.categoryId == categoryId) option_ids.push(d.optionId);
         });
         assert.deepStrictEqual(result[0].optionIds, option_ids);
         assert.deepStrictEqual(result[0].optionNames, option_names);

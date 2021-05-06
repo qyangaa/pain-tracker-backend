@@ -4,12 +4,13 @@ const {
   updateLastUsed,
 } = require("../../postgres/queries");
 
-const popular = {
-  1: [16, 17],
-  2: [18, 19, 20, 21],
-  3: [22, 23, 24, 25],
-};
+const utils = require("./utils/recordUtils");
 
+/**
+ * Upload record to database
+ * @param {{args: {records: [{optionId: number, categoryId: number, selected: boolean, value: number}]} }}
+ * @return {{Boolean}}
+ */
 exports.createRecords = async (args, req) => {
   try {
     const date = new Date();
@@ -18,39 +19,7 @@ exports.createRecords = async (args, req) => {
     }
 
     let records = args.records.filter((record) => record.selected);
-    const lastUsed = {
-      options: [],
-      categories: [],
-      selected: [],
-      value: [],
-      _id: req.uid,
-    };
-    const category2Options = {};
-
-    records.forEach((record) => {
-      lastUsed.options.push(parseInt(record._id));
-      categoryId = parseInt(record.categoryId);
-      lastUsed.categories.push(categoryId);
-      if (!category2Options[categoryId])
-        category2Options[categoryId] = new Set();
-      category2Options[categoryId].add(parseInt(record._id));
-
-      lastUsed.selected.push(true);
-      lastUsed.value.push(parseInt(record.value) ? record.value : 0);
-    });
-
-    for (const [categoryId, options] of Object.entries(category2Options)) {
-      if (options.length >= 4) continue;
-      for (let id of popular[categoryId]) {
-        if (options.has(id)) continue;
-        options.add(id);
-        lastUsed.options.push(id);
-        lastUsed.categories.push(categoryId);
-        lastUsed.selected.push(false);
-        lastUsed.value.push(0);
-        if (options.length >= 4) break;
-      }
-    }
+    const lastUsed = utils.createLastUsedEntry({ records, uid: req.uid });
     await uploadRecords(req.uid, records);
     await updateLastUsed(req.uid, lastUsed);
   } catch (error) {
