@@ -5,7 +5,7 @@ const records = require("../graphql/resolvers/records");
 
 describe("records.js", () => {
   const req = { uid: 1 };
-  describe("createRecords()", () => {
+  describe.only("createRecords()", () => {
     const args = {
       geoCoordinates: {
         lon: -121.9808,
@@ -39,7 +39,7 @@ describe("records.js", () => {
       ],
     };
     it("should create records", async () => {
-      await records.createRecords(args, req, recordUtils, queries);
+      await records.createRecords(args, req, null, recordUtils, queries);
     });
     it("should work without injections", async () => {
       await records.createRecords(args, req);

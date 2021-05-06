@@ -10,6 +10,7 @@ const recordUtils = require("./utils/recordUtils");
 exports.createRecords = async (
   args,
   req,
+  context,
   utils = recordUtils,
   _queries = queries
 ) => {
