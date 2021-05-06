@@ -20,7 +20,7 @@ module.exports = async (req, res, next) => {
     // const decodedToken = await admin.auth().verifyIdToken(idToken);
     // req.uid = decodedToken.auth_id;
     if (!authId) return res.status(403).json("Authentication Failed");
-    const uid = await getUid(authId);
+    const uid = await getUid({ authId });
     if (!uid) return res.status(403).json("Authentication Failed");
     req.uid = uid;
     return next();

@@ -5,9 +5,7 @@ module.exports = buildSchema(`
 type Category {
     _id: ID!
     name: String!
-    screenType: String!
     title: String!
-    backgroundImage: String!
     options: [Option!]!
 }
 
@@ -78,7 +76,6 @@ input geoCoordinates {
 
 
 type RootQuery {
-    option(id: ID!): Option
     lastUsed: [Category!]!
     searchOption(text: String!, categoryId: String!): [Option!]!
     getRecords(numMonths: String): Boolean

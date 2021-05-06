@@ -64,7 +64,7 @@ exports.getCategoryById = async ({ categoryId }) => {
 /**
  * load options with given ids
  * @param {{optionIds: [number]}}
- * @return {[{_id: number, categoryId: number, title: string, defaultValue: number, iconName: string}]}
+ * @return {[{_id: number, categoryId: number, title: string, defaultValue: number, iconName: string, unit: string}]}
  */
 exports.optionsLoader = async ({ optionIds }) => {
   try {

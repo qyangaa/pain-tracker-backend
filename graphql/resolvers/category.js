@@ -25,7 +25,7 @@ exports.searchOption = async (
 
 /**
  * get last used options grouped by category
- * @return {[{_id: number;name: string;title: string; options: {_id: number, categoryId: number, title: string, value: number, src: string, srcActive: string, iconName: string}}]}
+ * @return {[{_id: number;name: string;title: string; options: {_id: number, categoryId: number, title: string, value: number, src: string, srcActive: string, iconName: string, unit: string}}]}
  */
 exports.lastUsed = async (
   args,
