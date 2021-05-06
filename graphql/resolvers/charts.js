@@ -75,6 +75,7 @@ exports.getPieChartSelections = async (
       uid: req.uid,
     });
     const options = await _queries.getContributeeOptions({ uid: req.uid });
+    return { categories, options };
   } catch (error) {
     throw error;
   }
