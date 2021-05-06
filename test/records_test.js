@@ -5,7 +5,7 @@ const records = require("../graphql/resolvers/records");
 
 describe("records.js", () => {
   const req = { uid: 1 };
-  describe.only("createRecords()", () => {
+  describe("createRecords()", () => {
     const args = {
       geoCoordinates: {
         lon: -121.9808,

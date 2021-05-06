@@ -68,7 +68,7 @@ exports.getDailyTotal = async ({
     });
 
     const categoryInfo = await getCategoryById({ categoryId: args.categoryId });
-    // console.log(categoryInfo);
+
     const { range, results } = utils.yTransformData({ data, yTransformation });
     const series = {
       xlabel: "date",
@@ -78,7 +78,7 @@ exports.getDailyTotal = async ({
       yunit: args.unit,
       data: results,
     };
-    // console.log(series);
+
     return {
       title: `Everyday ${args.categoryName} (${args.unit})`,
       seriesData: [series],
