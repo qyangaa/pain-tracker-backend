@@ -4,6 +4,7 @@ const {
   getLastUsed,
   optionsLoader,
   categoriesLoader,
+  searchOptionQuery,
 } = require("../../postgres/queries");
 
 /**
@@ -13,15 +14,16 @@ const {
 exports.searchOption = async (
   args = { text: "" },
   req,
-  searchOptionQuery = queries.searchOptionQuery,
-  transformOptionOutput = utils.transformOptionOutput
+  context,
+  _queries = { searchOptionQuery },
+  _utils = { transformOptionOutput: utils.transformOptionOutput }
 ) => {
-  const options = await searchOptionQuery({
+  const options = await _queries.searchOptionQuery({
     text: args.text,
     categoryId: args.categoryId,
   });
   options.forEach((option) => {
-    transformOptionOutput({ option });
+    _utils.transformOptionOutput({ option });
     option.selected = true;
   });
   return options;

@@ -97,7 +97,7 @@ const searchOptionQuery = async ({ text, categoryId }) => {
 
 const transformOptionOutput = () => {};
 
-describe("category.js", () => {
+describe.only("category.js", () => {
   let args;
   const req = { uid: 1 };
   describe("searchOption()", () => {
@@ -106,8 +106,9 @@ describe("category.js", () => {
       const result = await searchOption(
         args,
         req,
-        searchOptionQuery,
-        transformOptionOutput
+        null,
+        { searchOptionQuery },
+        { transformOptionOutput }
       );
       assert.deepStrictEqual(result, [options_output_test[0]]);
     });
