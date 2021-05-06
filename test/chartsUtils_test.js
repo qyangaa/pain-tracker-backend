@@ -151,7 +151,7 @@ describe("chartUtils", () => {
     });
   });
 
-  describe.only("getSortedPercentageCounts()", () => {
+  describe("getSortedPercentageCounts()", () => {
     it(`should return correct percentage counts`, () => {
       const counts = { opt1: 4, opt2: 5, opt3: 1 };
       const correctResults = [

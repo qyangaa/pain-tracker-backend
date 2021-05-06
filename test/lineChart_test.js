@@ -1,4 +1,5 @@
 const lineCharts = require("../graphql/resolvers/charts/lineCharts");
+const testUtils = require("./utils/chartTestUtils");
 
 const assert = require("assert");
 
@@ -7,9 +8,7 @@ const getUserRecordsByCategory = ({
   categoryId,
   numMonths = "1 month",
 }) => {
-  if (!uid) throw new Error("missing argument 'uid'");
-  if (!categoryId) throw new Error("missing argument 'categoryId'");
-  if (!numMonths) throw new Error("missing argument 'numMonths'");
+  testUtils.checkParametersCategory({ uid, categoryId, numMonths });
   return [
     { optionId: 1, value: 1, date: new Date("01/01/2015") },
     { optionId: 2, value: 2, date: new Date("01/02/2015") },
@@ -24,9 +23,7 @@ const getUserRecordsByCategoryDayTotal = ({
   categoryId,
   numMonths = "1 month",
 }) => {
-  if (!uid) throw new Error("missing argument 'uid'");
-  if (!categoryId) throw new Error("missing argument 'categoryId'");
-  if (!numMonths) throw new Error("missing argument 'numMonths'");
+  testUtils.checkParametersCategory({ uid, categoryId, numMonths });
   return [
     { value: 1, date: new Date("01/01/2015") },
     { value: 2, date: new Date("01/02/2015") },

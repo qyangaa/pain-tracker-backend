@@ -121,14 +121,18 @@ const getContributionCounts = ({ targetData, categoryData, extension }) => {
  * @param {{optionName: number}}
  * @return {[{x: number, y: number}]}
  */
-const getSortedPercentageCounts = ({ counts }) => {
+const getSortedPercentageCounts = ({ counts, slice }) => {
   if (Object.keys(counts).length !== 0) {
-    let sum = Object.values(counts).reduce((total, d) => total + d);
     const results = Object.entries(counts).map((e) => ({
       x: e[0],
-      y: Math.round((e[1] / sum) * 100),
+      y: e[1],
     }));
     results.sort((d1, d2) => -d1.y + d2.y);
+    results.slice(0, slice);
+    let sum = results.reduce((total, d) => {
+      return total + d.y;
+    }, 0);
+    results.forEach((d) => (d.y = Math.round((d.y / sum) * 100)));
     return results;
   } else return [];
 };
