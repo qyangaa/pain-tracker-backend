@@ -49,7 +49,7 @@ describe("pieCharts.js", () => {
     numMonths: 4,
   };
   const req = { uid: 1 };
-  describe.only("getContribution()", () => {
+  describe("getContribution()", () => {
     it("should return correct contribution data", async () => {
       const result = await pieCharts.getContribution(
         args,

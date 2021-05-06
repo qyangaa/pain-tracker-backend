@@ -1,4 +1,4 @@
 ## refactor & tests
 
-- lineCharts
 - records
+- graphql schema
