@@ -76,7 +76,7 @@ const options_output_test = [
   },
 ];
 
-const getLastUsed = (uid) => {
+const getLastUsed = ({ uid }) => {
   if (uid === 1) return lastUsed_raw;
 };
 
@@ -122,19 +122,15 @@ describe("category.js", () => {
     { _id: 2, options: [options_output_test[1]] },
   ];
 
-  describe("lastUsed()", () => {
+  describe.only("lastUsed()", () => {
     it("should return correct categories with options list", async () => {
-      const result = await lastUsed(
-        args,
-        req,
-        getLastUsed,
-        optionsLoader,
-        categoriesLoader
-      );
+      const queries = { getLastUsed, optionsLoader, categoriesLoader };
+      const result = await lastUsed(args, req, null, queries);
       assert.deepStrictEqual(result, categories_output);
     });
     it("should work without injection", async () => {
       const result = await lastUsed(args, req);
+      assert(result.length > 0);
     });
   });
 });

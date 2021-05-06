@@ -1,6 +1,10 @@
 const utils = require("./utils/optionUtils");
 
-const queries = require("../../postgres/queries");
+const {
+  getLastUsed,
+  optionsLoader,
+  categoriesLoader,
+} = require("../../postgres/queries");
 
 /**
  * search option by full word input
@@ -30,29 +34,33 @@ exports.searchOption = async (
 exports.lastUsed = async (
   args,
   req = { uid: 1 },
-  getLastUsed = queries.getLastUsed,
-  optionsLoader = queries.optionsLoader,
-  categoriesLoader = queries.categoriesLoader
+  context,
+  _queries = { getLastUsed, optionsLoader, categoriesLoader },
+  _utils = utils
 ) => {
   try {
     // get last used options: lastUsed: [{option: selected}]
-    const { options: optionIds, selected, value: values } = await getLastUsed(
-      req.uid
-    );
-    const propertiesMap = utils.getOptionsPropertiesMap({
+    const {
+      options: optionIds,
+      selected,
+      value: values,
+    } = await _queries.getLastUsed({ uid: req.uid });
+    const propertiesMap = _utils.getOptionsPropertiesMap({
       optionIds,
       selected,
       values,
     });
-    const options = await optionsLoader({ optionIds });
-
-    const { category2options, categoryIds } = utils.getCategory2OptionsMap({
+    const options = await _queries.optionsLoader({ optionIds });
+    const { category2options, categoryIds } = _utils.getCategory2OptionsMap({
       options,
       propertiesMap,
     });
     // Organize optios by categories
-    const categories = await categoriesLoader(Array.from(categoryIds));
-    utils.addOptions2Categories({ categories, category2options });
+    const categories = await _queries.categoriesLoader({
+      categoryIds: Array.from(categoryIds),
+    });
+    _utils.addOptions2Categories({ categories, category2options });
+
     return categories;
   } catch (error) {
     return error;
