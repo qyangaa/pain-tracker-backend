@@ -42,9 +42,14 @@ exports.getLineChart = async (args, req, lines = lineCharts) => {
  * @param {{lineTypes: {key: string}}}
  * @return {[{key: string, name: string}]}
  */
-exports.getLineChartSelections = (lineTypes = lineCharts.lineTypes) => {
+exports.getLineChartSelections = (
+  args,
+  req,
+  context,
+  lineTypes = lineCharts.lineTypes
+) => {
   return Object.entries(lineTypes).map(([key, value]) => ({
-    id: key,
+    _id: key,
     name: value,
   }));
 };

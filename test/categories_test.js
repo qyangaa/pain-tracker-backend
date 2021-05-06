@@ -97,7 +97,7 @@ const searchOptionQuery = async ({ text, categoryId }) => {
 
 const transformOptionOutput = () => {};
 
-describe.only("category.js", () => {
+describe("category.js", () => {
   let args;
   const req = { uid: 1 };
   describe("searchOption()", () => {

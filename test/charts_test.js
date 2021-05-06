@@ -26,9 +26,14 @@ describe("charts.js", () => {
       const result = await charts.getLineChart(args, req);
     });
   });
-  describe("getLineChartSelections", () => {
+  describe.only("getLineChartSelections", () => {
     it("should return correct selections", () => {
-      const result = charts.getLineChartSelections(lineCharts.lineTypes);
+      const result = charts.getLineChartSelections(
+        null,
+        null,
+        null,
+        lineCharts.lineTypes
+      );
       assert.deepStrictEqual(result, lineCharts.lineTypes_output);
     });
     it("should work without injection", () => {
