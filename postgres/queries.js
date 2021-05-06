@@ -403,7 +403,8 @@ exports.getUserRecordsByCategoryDayOptions = async ({
 
 /**
  * Return category ids and names who are contributors as defined in database
- * @return {[{_id: number, name: string}]}
+ * @TODO refactor to query categories only user has records of
+ *  @return {[{_id: number, name: string}]}
  */
 exports.getContributorCategories = async () => {
   try {
@@ -420,6 +421,7 @@ exports.getContributorCategories = async () => {
 
 /**
  * Return option ids and names who are contributees as defined in database
+ * @TODO refactor to query options only user has records of
  * @return {[{_id: number, name: string}]}
  */
 exports.getContributeeOptions = async () => {
