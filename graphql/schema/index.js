@@ -80,7 +80,7 @@ type RootQuery {
     searchOption(text: String!, categoryId: Int!): [Option!]!
     getLineChart(numMonths: Int!, type: String!, arg: String): LineChart!
     getLineChartSelections: [LineChartOption!]!
-    getPieChart(categoryId: Int!, categoryName: String!, optionId: String!, optionName: String!, Int: String!, extension: Int!): LineChart!
+    getPieChart(categoryId: Int!, categoryName: String!, optionId: Int!, optionName: String!, numMonths: Int! , extension: Int!): LineChart!
     getPieChartSelections: PieChartSelections!
 }
 

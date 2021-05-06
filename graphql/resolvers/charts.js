@@ -8,7 +8,6 @@ const pieCharts = require("./charts/pieCharts");
  */
 exports.getLineChart = async (args, req, context, lines = lineCharts) => {
   try {
-    console.log(req.uid);
     const lineTypes = lines.lineTypes;
     if (Object.values(lineTypes).indexOf(args.type) === -1)
       throw new Error("Invalid lineType");
@@ -55,9 +54,9 @@ exports.getLineChartSelections = (
   }));
 };
 
-exports.getPieChart = async (args, req, pies = pieCharts) => {
+exports.getPieChart = async (args, req, context, _pieChart = pieCharts) => {
   try {
-    const result = await pies.getContribution(args, req);
+    const result = await _pieChart.getContribution(args, req);
     return result;
   } catch (error) {
     throw error;

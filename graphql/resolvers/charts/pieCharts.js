@@ -23,7 +23,13 @@ exports.getContribution = async (
       numMonths: utils.getMonth({ numMonths: args.numMonths }),
     });
 
-    const series = { xlabel: "item", ylabel: "count", data: [] };
+    const series = {
+      xlabel: "item",
+      ylabel: "%",
+      xunit: "",
+      yunit: "%",
+      data: [],
+    };
     const { counts } = utils.getContributionCounts({
       targetData,
       categoryData,
@@ -33,9 +39,10 @@ exports.getContribution = async (
       counts,
       slice: args.slice || 10,
     });
+    series.data = sortedPercentageCounts;
     return {
       title: `Contribution of ${args.categoryName} on ${args.optionName}`,
-      seriesData: [{ data: sortedPercentageCounts }],
+      seriesData: [series],
     };
   } catch (error) {
     throw error;
