@@ -6,8 +6,9 @@ const pieCharts = require("./charts/pieCharts");
 /**
  * get line chart of category and chart type specified
  */
-exports.getLineChart = async (args, req, lines = lineCharts) => {
+exports.getLineChart = async (args, req, context, lines = lineCharts) => {
   try {
+    console.log(req.uid);
     const lineTypes = lines.lineTypes;
     if (Object.values(lineTypes).indexOf(args.type) === -1)
       throw new Error("Invalid lineType");

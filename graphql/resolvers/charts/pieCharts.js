@@ -15,12 +15,12 @@ exports.getContribution = async (
     const targetData = await getUserRecordsByOptions({
       uid: req.uid,
       optionIds: [args.optionId],
-      numMonths: utils.getMonth(args.numMonths),
+      numMonths: utils.getMonth({ numMonths: args.numMonths }),
     });
     const categoryData = await getUserRecordsByCategoryDayOptions({
       uid: req.uid,
       categoryId: args.categoryId,
-      numMonths: utils.getMonth(args.numMonths),
+      numMonths: utils.getMonth({ numMonths: args.numMonths }),
     });
 
     const series = { xlabel: "item", ylabel: "count", data: [] };

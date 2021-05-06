@@ -22,7 +22,7 @@ exports.getAggregate = async ({
     const data = await getUserRecordsByCategory({
       uid: req.uid,
       categoryId: args.categoryId,
-      numMonths: utils.getMonth(args.numMonths),
+      numMonths: utils.getMonth({ numMonths: args.numMonths }),
     });
     const { positives, negatives } = await getPositivity({
       categoryId: args.categoryId,
@@ -64,7 +64,7 @@ exports.getDailyTotal = async ({
     const data = await getUserRecordsByCategoryDayTotal({
       uid: req.uid,
       categoryId: args.categoryId,
-      numMonths: utils.getMonth(args.numMonths),
+      numMonths: utils.getMonth({ numMonths: args.numMonths }),
     });
 
     const categoryInfo = await getCategoryById({ categoryId: args.categoryId });

@@ -8,17 +8,17 @@ describe("charts.js", () => {
   describe("getLineChart()", () => {
     it("should work with PAIN_LEVEL", async () => {
       args.type = lineCharts.lineTypes.PAIN_LEVEL;
-      const result = await charts.getLineChart(args, req, lineCharts);
+      const result = await charts.getLineChart(args, req, null, lineCharts);
       assert.deepStrictEqual(result, lineCharts.dummyLineData);
     });
     it("should work with EXERCISE_DURATION", async () => {
       args.type = lineCharts.lineTypes.EXERCISE_DURATION;
-      const result = await charts.getLineChart(args, req, lineCharts);
+      const result = await charts.getLineChart(args, req, null, lineCharts);
       assert.deepStrictEqual(result, lineCharts.dummyLineData);
     });
     it("should work with MOOD_LEVEL", async () => {
       args.type = lineCharts.lineTypes.MOOD_LEVEL;
-      const result = await charts.getLineChart(args, req, lineCharts);
+      const result = await charts.getLineChart(args, req, null, lineCharts);
       assert.deepStrictEqual(result, lineCharts.dummyLineData);
     });
     it("should work without injection", async () => {
@@ -26,7 +26,7 @@ describe("charts.js", () => {
       const result = await charts.getLineChart(args, req);
     });
   });
-  describe.only("getLineChartSelections", () => {
+  describe("getLineChartSelections", () => {
     it("should return correct selections", () => {
       const result = charts.getLineChartSelections(
         null,

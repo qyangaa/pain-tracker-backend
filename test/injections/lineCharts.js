@@ -4,9 +4,9 @@ exports.lineTypes = {
   MOOD_LEVEL: "mood level",
 };
 exports.lineTypes_output = [
-  { id: "PAIN_LEVEL", name: "pain level" },
-  { id: "EXERCISE_DURATION", name: "exercise duration" },
-  { id: "MOOD_LEVEL", name: "mood level" },
+  { _id: "PAIN_LEVEL", name: "pain level" },
+  { _id: "EXERCISE_DURATION", name: "exercise duration" },
+  { _id: "MOOD_LEVEL", name: "mood level" },
 ];
 
 exports.dummyLineData = "dummy data";
