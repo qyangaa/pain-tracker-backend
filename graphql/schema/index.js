@@ -78,9 +78,9 @@ input geoCoordinates {
 type RootQuery {
     lastUsed: [Category!]!
     searchOption(text: String!, categoryId: Int!): [Option!]!
-    getLineChart(numMonths: Int!, type: String!, arg: String): LineChart!
+    getLineChart(numMonths: Float!, type: String!, arg: String): LineChart!
     getLineChartSelections: [LineChartOption!]!
-    getPieChart(categoryId: Int!, categoryName: String!, optionId: Int!, optionName: String!, numMonths: Int! , extension: Int!): LineChart!
+    getPieChart(categoryId: Int!, categoryName: String!, optionId: Int!, optionName: String!, numMonths: Float! , extension: Float!): LineChart!
     getPieChartSelections: PieChartSelections!
 }
 
